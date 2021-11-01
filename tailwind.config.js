@@ -1,11 +1,20 @@
 module.exports = {
   purge: [],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'class', // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'app-light':'#F8F8FB',
+        'sidebar': '#252945',
+        'purple': '#7C5DFA',
+        'purple-light': '#9277FF',
+      }
+    },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'), // import tailwind forms
+  ],
 }
