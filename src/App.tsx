@@ -4,7 +4,7 @@ import InvoiceDetail from "./pages/InvoiceDetail";
 
 function App() {
   return (
-    <div className="App">
+    <div className="bg-green-50">
       <Switch>
         <Route exact path="/">
         <Redirect to="/invoices" />
