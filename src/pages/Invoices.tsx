@@ -14,7 +14,7 @@ const Invoices = () => {
   return (
     <div className="flex flex-col items-center w-screen">
       {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.CREATE} />}
-      <h1 className="text-xl font-bold color-red-500">Invoices</h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-white">Invoices</h1>
       <button onClick={showInvoiceForm}>new</button>
 
       {data.map((item) => (
