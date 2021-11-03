@@ -11,7 +11,7 @@ const InvoiceDetail = () => {
 
   const params = useParams<{ invoiceId: string }>();
   return (
-    <div>
+    <div className="flex flex-col items-center w-screen">
       {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.EDIT} />}
       <button onClick={showInvoiceForm}>Edit</button>
       <Link to="/invoices">back</Link>
