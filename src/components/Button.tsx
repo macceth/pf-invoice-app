@@ -3,14 +3,14 @@ import React from "react";
 interface ButtonProps {
   mode: Modes;
   className?: string;
-  onClick: ()=>void;
+  onClick: () => void;
 }
 
 export enum Modes {
   NewInvoice,
   MarkAsPaid,
   Edit,
-  B4,
+  Delete,
   B5,
   B6,
 }
@@ -23,7 +23,9 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-5 py-3 hover:bg-purple-light transition-color duration-100";
   } else if (mode === Modes.Edit) {
     btnClass =
-      "bg-gray-300 dark:bg-gray-700 m-1 text-gray-600 dark:text-gray-400 rounded-3xl px-5 py-3 hover:bg-purple-light transition-color duration-100";
+      "bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 m-1 text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 rounded-3xl px-5 py-3 transition-color duration-100";
+  } else if (mode === Modes.Delete) {
+    btnClass = "bg-red-400 m-1 text-white rounded-3xl px-5 py-3 hover:bg-red-300 transition-color duration-100";
   }
 
   return (
@@ -36,6 +38,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
       )}
       {mode === Modes.MarkAsPaid && <React.Fragment>Mark as Paid</React.Fragment>}
       {mode === Modes.Edit && <React.Fragment>Edit</React.Fragment>}
+      {mode === Modes.Delete && <React.Fragment>Delete</React.Fragment>}
     </button>
   );
 };

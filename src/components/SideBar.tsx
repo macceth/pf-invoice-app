@@ -6,7 +6,7 @@ interface SideBarProps {
 
 const SideBar = ({ toggleDarkModeHandler }: SideBarProps) => {
   return (
-    <React.Fragment>
+    <div className="bg-green-200">
       <div className="hidden sm:flex flex-col w-20 h-screen absolute bg-app-dark-3 rounded-r-3xl overflow-hidden">
         <div className="flex-none flex justify-center items-center text-white bg-purple h-20">
           <img src={process.env.PUBLIC_URL + "/assets/logo.svg"} alt="logo" />
@@ -38,7 +38,7 @@ const SideBar = ({ toggleDarkModeHandler }: SideBarProps) => {
           <img className="rounded-full w-10 h-10 mr-3" src={process.env.PUBLIC_URL + "/assets/image-avatar.jpg"} alt="avatar" />
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 
