@@ -10,6 +10,7 @@ interface InvoiceFormProps {
   mode: modes;
 }
 
+
 const InvoiceForm = ({ setShowInvoiceForm, mode }: InvoiceFormProps) => {
   const hideInvoiceForm = () => {
     setShowInvoiceForm(false);
@@ -21,6 +22,7 @@ const InvoiceForm = ({ setShowInvoiceForm, mode }: InvoiceFormProps) => {
       {mode === modes.CREATE && <h2>CREATE</h2>}
       {mode === modes.EDIT && <h2>EDIT</h2>}
       <button onClick={hideInvoiceForm}>cancel</button>
+
     </div>
   );
 };

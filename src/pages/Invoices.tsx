@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import InvoiceForm, { modes } from "../components/InvoiceForm";
 import Button, { Modes as buttonModes } from "../components/Button";
 import { useState } from "react";
 
 import data from "../data.json";
+import InvoiceItem from "../components/InvoiceItem";
 
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
@@ -15,20 +15,24 @@ const Invoices = () => {
   return (
     <div className="flex flex-col items-center w-screen">
       {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.CREATE} />}
-      <h1 className="text-xl font-bold text-gray-900 dark:text-white">Invoices</h1>
-      <button onClick={showInvoiceForm}>new</button>
-
-      <Button mode={buttonModes.NewInvoice}/>
-      <Button mode={buttonModes.MarkAsPaid}/>
-      <Button mode={buttonModes.Edit}/>
-
-      {data.map((item) => (
-        <Link to={"/invoices/" + item.id} key={item.id}>
+      <div className="container max-w-5xl pt-10 mx-auto">
+        <div className="flex justify-between">
           <div>
-            {item.id}: {item.description}
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Invoices</h1>
+            <h3 className="text-sm mt-3 text-gray-600 dark:text-white">There are ... total invoices</h3>
           </div>
-        </Link>
-      ))}
+          <div>
+            <button className="mr-5 text-gray-600 dark:text-white">
+              Filter by status <img className="inline-block" src={process.env.PUBLIC_URL + "/assets/icon-arrow-down.svg"} alt="icon-arrow-down" />
+            </button>
+            <Button onClick={showInvoiceForm} mode={buttonModes.NewInvoice} />
+          </div>
+        </div>
+
+        {data.map((item) => (
+          <InvoiceItem id={item.id} />
+        ))}
+      </div>
     </div>
   );
 };

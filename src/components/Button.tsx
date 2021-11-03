@@ -3,6 +3,7 @@ import React from "react";
 interface ButtonProps {
   mode: Modes;
   className?: string;
+  onClick: ()=>void;
 }
 
 export enum Modes {
@@ -14,7 +15,7 @@ export enum Modes {
   B6,
 }
 
-const Button = ({ mode, className }: ButtonProps) => {
+const Button = ({ mode, className, onClick }: ButtonProps) => {
   let btnClass = className ? className : "";
   if (mode === Modes.NewInvoice) {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-2 py-2 hover:bg-purple-light transition-color duration-100";
@@ -26,7 +27,7 @@ const Button = ({ mode, className }: ButtonProps) => {
   }
 
   return (
-    <button className={btnClass}>
+    <button className={btnClass} onClick={onClick}>
       {mode === Modes.NewInvoice && (
         <React.Fragment>
           <img className="bg-white rounded-full p-3 inline-block mr-3" src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="icon plus" />
