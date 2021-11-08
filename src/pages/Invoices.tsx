@@ -19,9 +19,10 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 const db = getFirestore();
 
+const defaultInvoices: any[] = [];
+
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
-  const defaultInvoices: any[] = [];
   const [invoices, setInvoices] = useState(defaultInvoices);
 
   const showInvoiceForm = () => {
