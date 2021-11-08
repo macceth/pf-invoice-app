@@ -1,23 +1,10 @@
 import InvoiceForm, { modes } from "../components/InvoiceForm";
 import Button, { Modes as buttonModes } from "../components/Button";
 import React, { useEffect, useState } from "react";
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, query, onSnapshot } from "firebase/firestore";
-
 import InvoiceItem from "../components/InvoiceItem";
 
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_APIKEY,
-  authDomain: process.env.REACT_APP_AUTHDOMAIN,
-  projectId: process.env.REACT_APP_PROJECTID,
-  storageBucket: process.env.REACT_APP_STORAGEBUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGINGSENDERID,
-  appId: process.env.REACT_APP_APPID,
-  measurementId: process.env.REACT_APP_MEASUREMENTID,
-};
+import data from "../data.json";
 
-initializeApp(firebaseConfig);
-const db = getFirestore();
 
 const defaultInvoices: any[] = [];
 
@@ -30,15 +17,7 @@ const Invoices = () => {
   };
 
   useEffect(() => {
-    const q = query(collection(db, "invoices"));
-    const unsub = onSnapshot(q, (querySnapshot) => {
-      const data: any[] = [];
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-      setInvoices(data);
-    });
-    return () => unsub();
+    setInvoices(data);
   }, []);
 
   return (
