@@ -17,7 +17,7 @@ const Invoices = () => {
 
   useEffect(() => {
     dispatch(fetchInvoicesData());
-  }, []);
+  }, [dispatch]);
 
   return (
     <React.Fragment>
