@@ -5,18 +5,18 @@ import InvoiceStatus from "../components/InvoiceStatus";
 import { useAppSelector } from "../hooks";
 
 import Button, { Modes } from "../components/Button";
-
+import Page from "../components/Page";
+import BottomButtonGroup from "../components/BottomButtonGroup";
 
 const InvoiceDetail = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
   const invoices = useAppSelector((state) => state.invoice.invoices);
   const { invoiceId } = useParams<{ invoiceId: string }>();
-  const currentInvoice = invoices.find(item => item.id === invoiceId);
+  const currentInvoice = invoices.find((item) => item.id === invoiceId);
 
   const showInvoiceForm = () => {
     setShowInvoiceForm(true);
   };
-
 
   useEffect(() => {}, [invoiceId]);
 
@@ -26,8 +26,16 @@ const InvoiceDetail = () => {
     showInvoiceForm();
   };
 
+  const buttonGroup = (
+    <React.Fragment>
+      <Button onClick={Edit} mode={Modes.Edit} />
+      <Button onClick={Edit} mode={Modes.Delete} />
+      <Button onClick={markAsPaid} mode={Modes.MarkAsPaid} />
+    </React.Fragment>
+  );
+
   return (
-    <div className="flex flex-col items-center w-screen h-screen mx-3 overflow-y-scroll">
+    <Page className="pb-16 sm:pb-0">
       <div className="container max-w-5xl pt-10 mx-auto">
         <Link to="/invoices">
           <button className="flex items-center mb-10">
@@ -41,11 +49,7 @@ const InvoiceDetail = () => {
               <div className="flex items-center dark:text-gray-400">
                 Status <InvoiceStatus status={currentInvoice.status} className="ml-3" />
               </div>
-              <div>
-                <Button onClick={Edit} mode={Modes.Edit} />
-                <Button onClick={Edit} mode={Modes.Delete} />
-                <Button onClick={markAsPaid} mode={Modes.MarkAsPaid} />
-              </div>
+              <div className="hidden sm:block">{buttonGroup}</div>
             </div>
 
             <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mt-6 flex-col justify-between">
@@ -79,10 +83,12 @@ const InvoiceDetail = () => {
             <div className="flex justify-between mb-14">
               {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.EDIT} />}
             </div>
+
+            <BottomButtonGroup>{buttonGroup}</BottomButtonGroup>
           </React.Fragment>
         )}
       </div>
-    </div>
+    </Page>
   );
 };
 

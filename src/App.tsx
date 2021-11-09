@@ -26,7 +26,8 @@ function App() {
     <div className={"containter " + darkClass}>
       <div className="bg-app-light dark:bg-app-dark-1 transition-all duration-300">
         <SideBar toggleDarkModeHandler={toggleDarkModeHandler} />
-        <div className="flex transition-all duration-300 h-screen w-auto  mt-16 sm:m-0 sm:ml-20">
+        <div className="flex transition-all duration-300 w-auto h-screen">
+          <div className="sm:ml-20"></div>
           <Switch>
             <Route exact path="/">
               <Redirect to="/invoices" />

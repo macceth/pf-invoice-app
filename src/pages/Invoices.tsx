@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import InvoiceItem from "../components/InvoiceItem";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchInvoicesData } from "../store/invoice-action";
+import Page from "../components/Page";
 
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
@@ -22,7 +23,7 @@ const Invoices = () => {
   return (
     <React.Fragment>
       {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.CREATE} />}
-      <div className="flex flex-col items-center w-screen h-screen mx-3 overflow-y-scroll">
+      <Page>
         <div className="container max-w-5xl pt-10 mx-auto">
           <div className="flex justify-between mb-14">
             <div>
@@ -48,7 +49,7 @@ const Invoices = () => {
             />
           ))}
         </div>
-      </div>
+      </Page>
     </React.Fragment>
   );
 };
