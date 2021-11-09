@@ -2,20 +2,21 @@ import { Link, useParams } from "react-router-dom";
 import InvoiceForm, { modes } from "../components/InvoiceForm";
 import React, { useEffect, useState } from "react";
 import InvoiceStatus from "../components/InvoiceStatus";
+import { useAppSelector } from "../hooks";
 
 import Button, { Modes } from "../components/Button";
 
-const defaultInvoice: any = null;
 
 const InvoiceDetail = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
-  const [invoice, setInvoice] = useState(defaultInvoice);
+  const invoices = useAppSelector((state) => state.invoice.invoices);
+  const { invoiceId } = useParams<{ invoiceId: string }>();
+  const currentInvoice = invoices.find(item => item.id === invoiceId);
 
   const showInvoiceForm = () => {
     setShowInvoiceForm(true);
   };
 
-  const { invoiceId } = useParams<{ invoiceId: string }>();
 
   useEffect(() => {}, [invoiceId]);
 
@@ -34,11 +35,11 @@ const InvoiceDetail = () => {
             <span className="text-gray-800 dark:text-white font-bold">Go Back</span>
           </button>
         </Link>
-        {invoice && (
+        {currentInvoice && (
           <React.Fragment>
             <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mx-auto flex justify-between">
               <div className="flex items-center dark:text-gray-400">
-                Status <InvoiceStatus status={invoice.status} className="ml-3" />
+                Status <InvoiceStatus status={currentInvoice.status} className="ml-3" />
               </div>
               <div>
                 <Button onClick={Edit} mode={Modes.Edit} />
@@ -51,15 +52,15 @@ const InvoiceDetail = () => {
               <div className="flex justify-between items-center flex-1">
                 <div>
                   <div className="text-2xl dark:text-white">
-                    #<span className=" font-bold">{invoice.id}</span>
+                    #<span className=" font-bold">{currentInvoice.id}</span>
                   </div>
-                  <p className="mt-3 text-gray-500">{invoice.description}</p>
+                  <p className="mt-3 text-gray-500">{currentInvoice.description}</p>
                 </div>
                 <div className="text-gray-500">
-                  <p>{invoice.senderAddress.street}</p>
-                  <p>{invoice.senderAddress.city}</p>
-                  <p>{invoice.senderAddress.postCode}</p>
-                  <p>{invoice.senderAddress.country}</p>
+                  <p>{currentInvoice.senderAddress.street}</p>
+                  <p>{currentInvoice.senderAddress.city}</p>
+                  <p>{currentInvoice.senderAddress.postCode}</p>
+                  <p>{currentInvoice.senderAddress.country}</p>
                 </div>
               </div>
 
