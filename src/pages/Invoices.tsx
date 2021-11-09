@@ -2,22 +2,21 @@ import InvoiceForm, { modes } from "../components/InvoiceForm";
 import Button, { Modes as buttonModes } from "../components/Button";
 import React, { useEffect, useState } from "react";
 import InvoiceItem from "../components/InvoiceItem";
-
-import data from "../data.json";
-
-
-const defaultInvoices: any[] = [];
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { fetchInvoicesData } from "../store/invoice-action";
 
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
-  const [invoices, setInvoices] = useState(defaultInvoices);
+  const invoices = useAppSelector((state) => state.invoice.invoices);
+
+  const dispatch = useAppDispatch();
 
   const showInvoiceForm = () => {
     setShowInvoiceForm(true);
   };
 
   useEffect(() => {
-    setInvoices(data);
+    dispatch(fetchInvoicesData());
   }, []);
 
   return (
