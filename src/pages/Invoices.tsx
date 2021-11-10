@@ -28,7 +28,7 @@ const Invoices = () => {
           <div className="flex justify-between mb-14">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Invoices</h1>
-              <h3 className="text-sm mt-3 text-gray-600 dark:text-white">There are ... total invoices</h3>
+              <h3 className="text-sm mt-3 text-gray-600 dark:text-white">There are {invoices.length} total invoices</h3>
             </div>
             <div>
               <button className="mr-5 text-gray-600 dark:text-white">

@@ -14,6 +14,7 @@ module.exports = {
         'app-dark-2': '#0C0E16',
         'app-dark-3': '#252945',
         'app-dark-4': '#1E2139',
+        'app-dark-5': '#363a57',
         'purple': '#7C5DFA',
         'purple-light': '#9277FF',
         'gray-line': '#888EB0',

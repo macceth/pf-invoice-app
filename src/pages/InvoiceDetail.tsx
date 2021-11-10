@@ -3,15 +3,17 @@ import InvoiceForm, { modes } from "../components/InvoiceForm";
 import React, { useEffect, useState } from "react";
 import InvoiceStatus from "../components/InvoiceStatus";
 import { useAppDispatch, useAppSelector } from "../hooks";
+import moment from "moment";
 
 import Button, { Modes } from "../components/Button";
 import Page from "../components/Page";
 import BottomButtonGroup from "../components/BottomButtonGroup";
 import { fetchInvoiceItemData } from "../store/invoice-action";
+import ItemList from "../components/ItemList";
 
 const InvoiceDetail = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
-  const invoiceItem = useAppSelector((state) => state.invoice.invoiceItem);
+  const invoiceStoreItem = useAppSelector((state) => state.invoice.invoiceItem);
   const { invoiceId } = useParams<{ invoiceId: string }>();
 
   const dispatch = useAppDispatch();
@@ -30,6 +32,8 @@ const InvoiceDetail = () => {
     showInvoiceForm();
   };
 
+  const invoiceItem = invoiceStoreItem && invoiceStoreItem.id === invoiceId ? invoiceStoreItem : null;
+
   const buttonGroup = (
     <React.Fragment>
       <Button onClick={Edit} mode={Modes.Edit} />
@@ -37,6 +41,9 @@ const InvoiceDetail = () => {
       <Button onClick={markAsPaid} mode={Modes.MarkAsPaid} />
     </React.Fragment>
   );
+
+  const createDateString = invoiceItem ? moment(invoiceItem.createdAt).format("DD MMM YYYY") : "";
+  const dueDateString = invoiceItem ? moment(invoiceItem.paymentDue).format("DD MMM YYYY") : "";
 
   return (
     <Page className="pb-16 sm:pb-0">
@@ -57,31 +64,49 @@ const InvoiceDetail = () => {
             </div>
 
             <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mt-6 flex-col justify-between">
-              <div className="flex justify-between items-center flex-1">
-                <div>
+              <div className="grid grid-cols-2 justify-between items-center flex-1">
+                <div className="mt-3 col-span-2 sm:col-span-1">
                   <div className="text-2xl dark:text-white">
                     #<span className=" font-bold">{invoiceItem.id}</span>
                   </div>
-                  <p className="mt-3 text-gray-500">{invoiceItem.description}</p>
+                  <p className="mt-2 text-gray-500">{invoiceItem.description}</p>
                 </div>
-                <div className="text-gray-500">
-                  <p>{invoiceItem.senderAddress.street}</p>
-                  <p>{invoiceItem.senderAddress.city}</p>
-                  <p>{invoiceItem.senderAddress.postCode}</p>
-                  <p>{invoiceItem.senderAddress.country}</p>
+                <div className="mt-12 sm:mt-6 col-span-2 sm:col-span-1 flex sm:justify-end justify-start">
+                  <div className="mr-5 text-gray-500">
+                    <p>{invoiceItem.senderAddress.street}</p>
+                    <p>{invoiceItem.senderAddress.city}</p>
+                    <p>{invoiceItem.senderAddress.postCode}</p>
+                    <p>{invoiceItem.senderAddress.country}</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-6 flex">
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3">
                 <div className="flex-1">
                   <div>
-                    <p className="text-md text-gray-800 dark:text-gray-200">invoice Date</p>
+                    <p className="text-md text-gray-500 dark:text-gray-200">invoice Date</p>
+                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{createDateString}</p>
                   </div>
-                  <div>Payment Due</div>
+                  <div className="mt-10">
+                    <p className="text-md text-gray-500 dark:text-gray-200">Payment Due</p>
+                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{dueDateString}</p>
+                  </div>
                 </div>
-                <div className="flex-1">Bill To</div>
-                <div className="flex-1.5">Sent To</div>
+                <div className="flex-1">
+                  <p className="text-md text-gray-500 dark:text-gray-200">Bill To</p>
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{invoiceItem.clientName}</p>
+                  <p className="text-md text-gray-500 dark:text-gray-200">{invoiceItem.clientAddress.street}</p>
+                  <p className="text-md text-gray-500 dark:text-gray-200">{invoiceItem.clientAddress.city}</p>
+                  <p className="text-md text-gray-500 dark:text-gray-200">{invoiceItem.clientAddress.postCode}</p>
+                  <p className="text-md text-gray-500 dark:text-gray-200">{invoiceItem.clientAddress.country}</p>
+                </div>
+                <div className="flex-1.5 mt-10 sm:mt-0">
+                  <p className="text-md text-gray-500 dark:text-gray-200">Sent To</p>
+                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{invoiceItem.clientEmail}</p>
+                </div>
               </div>
+
+              <ItemList itemList={invoiceItem.items} total={invoiceItem.total} />
             </div>
 
             <div className="flex justify-between mb-14">

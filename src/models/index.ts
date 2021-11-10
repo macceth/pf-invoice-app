@@ -1,3 +1,10 @@
+export interface invoiceItemType {
+  name: string;
+  quantity: number;
+  price: number;
+  total: number;
+}
+
 export interface invoiceType {
   id: string;
   clientName: string;
@@ -20,12 +27,5 @@ export interface invoiceType {
     postCode: string;
     country: string;
   };
-  items: [
-    {
-      name: string;
-      quantity: number;
-      price: number;
-      total: number;
-    }
-  ];
-};
+  items: [invoiceItemType];
+}
