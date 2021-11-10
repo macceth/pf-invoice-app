@@ -2,23 +2,27 @@ import { Link, useParams } from "react-router-dom";
 import InvoiceForm, { modes } from "../components/InvoiceForm";
 import React, { useEffect, useState } from "react";
 import InvoiceStatus from "../components/InvoiceStatus";
-import { useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 
 import Button, { Modes } from "../components/Button";
 import Page from "../components/Page";
 import BottomButtonGroup from "../components/BottomButtonGroup";
+import { fetchInvoiceItemData } from "../store/invoice-action";
 
 const InvoiceDetail = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
-  const invoices = useAppSelector((state) => state.invoice.invoices);
+  const invoiceItem = useAppSelector((state) => state.invoice.invoiceItem);
   const { invoiceId } = useParams<{ invoiceId: string }>();
-  const currentInvoice = invoices.find((item) => item.id === invoiceId);
+
+  const dispatch = useAppDispatch();
 
   const showInvoiceForm = () => {
     setShowInvoiceForm(true);
   };
 
-  useEffect(() => {}, [invoiceId]);
+  useEffect(() => {
+    if (invoiceId) dispatch(fetchInvoiceItemData(invoiceId));
+  }, [dispatch, invoiceId]);
 
   const markAsPaid = () => {};
 
@@ -43,11 +47,11 @@ const InvoiceDetail = () => {
             <span className="text-gray-800 dark:text-white font-bold">Go Back</span>
           </button>
         </Link>
-        {currentInvoice && (
+        {invoiceItem && (
           <React.Fragment>
             <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mx-auto flex justify-between">
               <div className="flex items-center dark:text-gray-400">
-                Status <InvoiceStatus status={currentInvoice.status} className="ml-3" />
+                Status <InvoiceStatus status={invoiceItem.status} className="ml-3" />
               </div>
               <div className="hidden sm:block">{buttonGroup}</div>
             </div>
@@ -56,15 +60,15 @@ const InvoiceDetail = () => {
               <div className="flex justify-between items-center flex-1">
                 <div>
                   <div className="text-2xl dark:text-white">
-                    #<span className=" font-bold">{currentInvoice.id}</span>
+                    #<span className=" font-bold">{invoiceItem.id}</span>
                   </div>
-                  <p className="mt-3 text-gray-500">{currentInvoice.description}</p>
+                  <p className="mt-3 text-gray-500">{invoiceItem.description}</p>
                 </div>
                 <div className="text-gray-500">
-                  <p>{currentInvoice.senderAddress.street}</p>
-                  <p>{currentInvoice.senderAddress.city}</p>
-                  <p>{currentInvoice.senderAddress.postCode}</p>
-                  <p>{currentInvoice.senderAddress.country}</p>
+                  <p>{invoiceItem.senderAddress.street}</p>
+                  <p>{invoiceItem.senderAddress.city}</p>
+                  <p>{invoiceItem.senderAddress.postCode}</p>
+                  <p>{invoiceItem.senderAddress.country}</p>
                 </div>
               </div>
 
