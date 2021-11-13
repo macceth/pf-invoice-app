@@ -51,3 +51,15 @@ export const deleteInvoiceItem = (id: string) => {
     }
   };
 };
+
+export const markAsPaid = (id: string) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentInvoicesData = getState().invoice.invoices;
+      const newInvoicesData = currentInvoicesData.map((item) => ({ ...item, status: item.id === id ? "paid" : item.status }));
+      localStorage.setItem("data", JSON.stringify(newInvoicesData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};

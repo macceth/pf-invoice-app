@@ -12,9 +12,10 @@ interface InvoiceItemProps {
 
 const InvoiceItem = (props: InvoiceItemProps) => {
   const dueDateString = moment(props.paymentDue).format("DD MMM YYYY");
+  const path = "/invoices/" + (props.status === 'draft' ? 'create/' : '') + props.id
 
   return (
-    <Link to={"/invoices/" + props.id}>
+    <Link to={path}>
       <div className="hidden md:flex bg-white hover:bg-gray-50 dark:bg-app-dark-3 dark:hover:bg-app-dark-4 rounded-md w-auto mb-5 p-7 shadow justify-between items-center">
         <div className="flex-1">
           <span className="text-purple font-bold mr-0.5 text-lg">#</span>

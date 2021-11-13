@@ -8,7 +8,7 @@ import moment from "moment";
 import Button, { Modes } from "../components/Button";
 import Page from "../components/Page";
 import BottomButtonGroup from "../components/BottomButtonGroup";
-import { fetchInvoiceItemData, deleteInvoiceItem } from "../store/invoice-action";
+import { fetchInvoiceItemData, deleteInvoiceItem, markAsPaid } from "../store/invoice-action";
 import ItemList from "../components/ItemList";
 import Modal from "../components/Modal";
 import { useHistory } from "react-router-dom";
@@ -31,7 +31,13 @@ const InvoiceDetail = () => {
     if (invoiceId) dispatch(fetchInvoiceItemData(invoiceId));
   }, [dispatch, invoiceId]);
 
-  const markAsPaid = () => {};
+  const MarkAsPaidHandler = () => {
+    const status = invoiceStoreItem?.status;
+    if (status === "pending" && invoiceId) {
+      dispatch(markAsPaid(invoiceId));
+      dispatch(fetchInvoiceItemData(invoiceId));
+    }
+  };
 
   const openEditInvoiceItemPanel = () => {
     showInvoiceForm();
@@ -48,11 +54,11 @@ const InvoiceDetail = () => {
 
   const invoiceItem = invoiceStoreItem && invoiceStoreItem.id === invoiceId ? invoiceStoreItem : null;
 
-  const buttonGroup = (
+  const editButtonGroup = (
     <React.Fragment>
       <Button onClick={openEditInvoiceItemPanel} mode={Modes.Edit} />
       <Button onClick={openDeleteInvoiceItemDialog} mode={Modes.Delete} />
-      <Button onClick={markAsPaid} mode={Modes.MarkAsPaid} />
+      {invoiceItem?.status === "pending" && <Button onClick={MarkAsPaidHandler} mode={Modes.MarkAsPaid} />}
     </React.Fragment>
   );
 
@@ -81,7 +87,7 @@ const InvoiceDetail = () => {
               <div className="flex items-center dark:text-gray-400">
                 Status <InvoiceStatus status={invoiceItem.status} className="ml-3" />
               </div>
-              <div className="hidden sm:block">{buttonGroup}</div>
+              <div className="hidden sm:block">{editButtonGroup}</div>
             </div>
 
             <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mt-6 flex-col justify-between">
@@ -134,7 +140,7 @@ const InvoiceDetail = () => {
               {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.EDIT} />}
             </div>
 
-            <BottomButtonGroup>{buttonGroup}</BottomButtonGroup>
+            <BottomButtonGroup>{editButtonGroup}</BottomButtonGroup>
 
             <Modal
               open={showDeleteModal}
