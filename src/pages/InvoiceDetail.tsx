@@ -8,11 +8,16 @@ import moment from "moment";
 import Button, { Modes } from "../components/Button";
 import Page from "../components/Page";
 import BottomButtonGroup from "../components/BottomButtonGroup";
-import { fetchInvoiceItemData } from "../store/invoice-action";
+import { fetchInvoiceItemData, deleteInvoiceItem } from "../store/invoice-action";
 import ItemList from "../components/ItemList";
+import Modal from "../components/Modal";
+import { useHistory } from "react-router-dom";
 
 const InvoiceDetail = () => {
+  const history = useHistory();
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
+  const [showDeleteModal, setshowDeleteModal] = useState(false);
+
   const invoiceStoreItem = useAppSelector((state) => state.invoice.invoiceItem);
   const { invoiceId } = useParams<{ invoiceId: string }>();
 
@@ -28,22 +33,38 @@ const InvoiceDetail = () => {
 
   const markAsPaid = () => {};
 
-  const Edit = () => {
+  const openEditInvoiceItemPanel = () => {
     showInvoiceForm();
+  };
+
+  const openDeleteInvoiceItemDialog = () => {
+    setshowDeleteModal(true);
+  };
+
+  const confirmDeleteInvoiceItem = () => {
+    dispatch(deleteInvoiceItem(invoiceId));
+    history.replace("/invoices");
   };
 
   const invoiceItem = invoiceStoreItem && invoiceStoreItem.id === invoiceId ? invoiceStoreItem : null;
 
   const buttonGroup = (
     <React.Fragment>
-      <Button onClick={Edit} mode={Modes.Edit} />
-      <Button onClick={Edit} mode={Modes.Delete} />
+      <Button onClick={openEditInvoiceItemPanel} mode={Modes.Edit} />
+      <Button onClick={openDeleteInvoiceItemDialog} mode={Modes.Delete} />
       <Button onClick={markAsPaid} mode={Modes.MarkAsPaid} />
     </React.Fragment>
   );
 
   const createDateString = invoiceItem ? moment(invoiceItem.createdAt).format("DD MMM YYYY") : "";
   const dueDateString = invoiceItem ? moment(invoiceItem.paymentDue).format("DD MMM YYYY") : "";
+
+  const DeleteModalButtonGroup = (
+    <React.Fragment>
+      <Button onClick={() => setshowDeleteModal(false)} mode={Modes.Cancel} />
+      <Button onClick={confirmDeleteInvoiceItem} mode={Modes.Delete} />
+    </React.Fragment>
+  );
 
   return (
     <Page className="pb-16 sm:pb-0">
@@ -114,6 +135,14 @@ const InvoiceDetail = () => {
             </div>
 
             <BottomButtonGroup>{buttonGroup}</BottomButtonGroup>
+
+            <Modal
+              open={showDeleteModal}
+              setClose={() => setshowDeleteModal(false)}
+              title="Confirm Deletion"
+              info={`Are you sure you want to delete invoice #${invoiceId}? This action cannot be undone.`}
+              buttonGroup={DeleteModalButtonGroup}
+            />
           </React.Fragment>
         )}
       </div>

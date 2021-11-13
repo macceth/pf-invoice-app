@@ -1,5 +1,5 @@
 import { invoiceActions } from "./invoice-slice";
-import type { AppDispatch } from ".";
+import type { AppDispatch, RootState } from ".";
 import { invoiceType } from "../models";
 import axios from "axios";
 
@@ -34,6 +34,18 @@ export const fetchInvoiceItemData = (id: string) => {
       }
       const dataResult = data ? data.find((item) => item.id === id) : null;
       dispatch(invoiceActions.replaceInvoiceItem({ invoiceItem: dataResult }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const deleteInvoiceItem = (id: string) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentInvoicesData = getState().invoice.invoices;
+      const newInvoicesData = currentInvoicesData.filter((item) => item.id !== id);
+      localStorage.setItem("data", JSON.stringify(newInvoicesData));
     } catch (error) {
       console.log(error);
     }

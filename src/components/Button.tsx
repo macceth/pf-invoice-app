@@ -11,7 +11,7 @@ export enum Modes {
   MarkAsPaid,
   Edit,
   Delete,
-  B5,
+  Cancel,
   B6,
 }
 
@@ -21,7 +21,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-2 py-2 hover:bg-purple-light transition-color duration-100";
   } else if (mode === Modes.MarkAsPaid) {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-5 py-3 hover:bg-purple-light transition-color duration-100";
-  } else if (mode === Modes.Edit) {
+  } else if (mode === Modes.Edit || mode === Modes.Cancel) {
     btnClass =
       "bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 m-1 text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 rounded-3xl px-5 py-3 transition-color duration-100";
   } else if (mode === Modes.Delete) {
@@ -38,6 +38,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
       )}
       {mode === Modes.MarkAsPaid && <React.Fragment>Mark as Paid</React.Fragment>}
       {mode === Modes.Edit && <React.Fragment>Edit</React.Fragment>}
+      {mode === Modes.Cancel && <React.Fragment>Cancel</React.Fragment>}
       {mode === Modes.Delete && <React.Fragment>Delete</React.Fragment>}
     </button>
   );
