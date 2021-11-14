@@ -12,8 +12,8 @@ const Invoices = () => {
 
   const dispatch = useAppDispatch();
 
-  const showInvoiceForm = () => {
-    setShowInvoiceForm(true);
+  const showInvoiceForm = (state: boolean) => {
+    setShowInvoiceForm(state);
   };
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const Invoices = () => {
 
   return (
     <React.Fragment>
-      {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.CREATE} />}
+      <InvoiceForm mode={modes.CREATE} show={showCreateInvoice} setShow={showInvoiceForm} />
       <Page>
         <div className="container max-w-5xl pt-10 mx-auto">
           <div className="flex justify-between mb-14">
@@ -34,7 +34,7 @@ const Invoices = () => {
               <button className="mr-5 text-gray-600 dark:text-white">
                 Filter by status <img className="inline-block" src={process.env.PUBLIC_URL + "/assets/icon-arrow-down.svg"} alt="icon-arrow-down" />
               </button>
-              <Button onClick={showInvoiceForm} mode={buttonModes.NewInvoice} />
+              <Button onClick={() => showInvoiceForm(true)} mode={buttonModes.NewInvoice} />
             </div>
           </div>
 

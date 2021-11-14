@@ -15,17 +15,13 @@ import { useHistory } from "react-router-dom";
 
 const InvoiceDetail = () => {
   const history = useHistory();
-  const [showCreateInvoice, setShowInvoiceForm] = useState(false);
+  const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showDeleteModal, setshowDeleteModal] = useState(false);
 
   const invoiceStoreItem = useAppSelector((state) => state.invoice.invoiceItem);
   const { invoiceId } = useParams<{ invoiceId: string }>();
 
   const dispatch = useAppDispatch();
-
-  const showInvoiceForm = () => {
-    setShowInvoiceForm(true);
-  };
 
   useEffect(() => {
     if (invoiceId) dispatch(fetchInvoiceItemData(invoiceId));
@@ -39,14 +35,6 @@ const InvoiceDetail = () => {
     }
   };
 
-  const openEditInvoiceItemPanel = () => {
-    showInvoiceForm();
-  };
-
-  const openDeleteInvoiceItemDialog = () => {
-    setshowDeleteModal(true);
-  };
-
   const confirmDeleteInvoiceItem = () => {
     dispatch(deleteInvoiceItem(invoiceId));
     history.replace("/invoices");
@@ -56,8 +44,8 @@ const InvoiceDetail = () => {
 
   const editButtonGroup = (
     <React.Fragment>
-      <Button onClick={openEditInvoiceItemPanel} mode={Modes.Edit} />
-      <Button onClick={openDeleteInvoiceItemDialog} mode={Modes.Delete} />
+      <Button onClick={() => setShowInvoiceForm(true)} mode={Modes.Edit} />
+      <Button onClick={() => setshowDeleteModal(true)} mode={Modes.Delete} />
       {invoiceItem?.status === "pending" && <Button onClick={MarkAsPaidHandler} mode={Modes.MarkAsPaid} />}
     </React.Fragment>
   );
@@ -136,9 +124,7 @@ const InvoiceDetail = () => {
               <ItemList itemList={invoiceItem.items} total={invoiceItem.total} />
             </div>
 
-            <div className="flex justify-between mb-14">
-              {showCreateInvoice && <InvoiceForm setShowInvoiceForm={setShowInvoiceForm} mode={modes.EDIT} />}
-            </div>
+            <InvoiceForm show={showInvoiceForm} setShow={setShowInvoiceForm} mode={modes.EDIT} />
 
             <BottomButtonGroup>{editButtonGroup}</BottomButtonGroup>
 

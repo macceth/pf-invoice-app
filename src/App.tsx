@@ -24,9 +24,9 @@ function App() {
 
   return (
     <div className={"containter " + darkClass}>
-      <div className="bg-app-light dark:bg-app-dark-1 transition-all duration-300">
+      <div className="bg-app-light dark:bg-app-dark-1 duration-500">
         <SideBar toggleDarkModeHandler={toggleDarkModeHandler} />
-        <div className="flex transition-all duration-300 w-auto h-screen">
+        <div className="flex w-auto h-screen">
           <div className="sm:ml-20"></div>
           <Switch>
             <Route exact path="/">
