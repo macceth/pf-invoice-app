@@ -25,7 +25,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
     btnClass =
       "bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 m-1 text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 rounded-3xl px-5 py-3 transition-color duration-100";
   } else if (mode === Modes.Delete) {
-    btnClass = "bg-red-400 m-1 text-white rounded-3xl px-5 py-3 hover:bg-red-300 transition-color duration-100";
+    btnClass = "bg-red-500 m-1 text-white rounded-3xl px-5 py-3 hover:bg-red-400 transition-color duration-100";
   }
 
   return (
