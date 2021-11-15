@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Input from "./Input";
 import Button, { Modes as btnModes } from "./Button";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchInvoiceItemData } from "../store/invoice-action";
 import type { invoiceItemType } from "../models";
+import DatePicker from "./DatePicker";
 
 export enum modes {
   CREATE,
@@ -29,7 +30,9 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
   const [clientCity, setClientCity] = useState("");
   const [clientPostcode, setClientPostcode] = useState("");
   const [clientCountry, setClientCountry] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
   const [invoiceItems, setInvoiceItems] = useState<invoiceItemType[]>([]);
+  const [createAt, setCreateAt] = useState("");
 
   const { invoiceId } = useParams<{ invoiceId: string }>();
 
@@ -41,8 +44,8 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
     if (invoiceId) dispatch(fetchInvoiceItemData(invoiceId));
   }, [dispatch, invoiceId]);
 
-  useEffect(() => {
-    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceStoreItem) {
+  const loadDataForEdit = useCallback(() => {
+    if (invoiceStoreItem) {
       setStreetAddress(invoiceStoreItem.senderAddress.street);
       setCity(invoiceStoreItem.senderAddress.city);
       setPostcode(invoiceStoreItem.senderAddress.postCode);
@@ -54,8 +57,16 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
       setClientPostcode(invoiceStoreItem.clientAddress.postCode);
       setClientCountry(invoiceStoreItem.clientAddress.country);
       setInvoiceItems(invoiceStoreItem.items);
+      setProjectDescription(invoiceStoreItem.description);
+      setCreateAt(invoiceStoreItem.createdAt);
     }
   }, [invoiceStoreItem]);
+
+  useEffect(() => {
+    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceStoreItem) {
+      loadDataForEdit();
+    }
+  }, [invoiceStoreItem, loadDataForEdit, mode]);
 
   let title = "";
   if (mode === modes.CREATE || mode === modes.CREATE_DRAFT) {
@@ -75,6 +86,13 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
 
   const addInvoiceItem = () => {
     setInvoiceItems([...invoiceItems, { name: "", price: 0, quantity: 0, total: 0 }]);
+  };
+
+  const discard = () => {
+    setShow(false);
+    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceStoreItem) {
+      loadDataForEdit();
+    }
   };
 
   const saveInvoiceItem = ({
@@ -151,35 +169,43 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
       >
         <div className="bg-white dark:bg-app-dark-4 h-full p-8 md:rounded-r-3xl">
           <div className="h-full pb-24 overflow-y-scroll">
-            <h1 className="font-bold text-3xl text-gray-900 dark:text-white">{title}</h1>
-            {/* ----------------------------------------- */}
-            <p className="text-md mt-10 text-purple font-bold mx-2">Bill From</p>
             <div className="mx-2">
+              <h1 className="font-bold text-3xl text-gray-900 dark:text-white">{title}</h1>
+              {/* ----------------------------------------- */}
+              <p className="text-md mt-10 text-purple font-bold mx-2">Bill From</p>
               <Input name="Street Address" value={streetAdress} setValue={setStreetAddress} />
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
-                <Input className="" name="City" value={city} setValue={setCity} />
-                <Input className="" name="Post Code" value={postcode} setValue={setPostcode} />
+                <Input name="City" value={city} setValue={setCity} />
+                <Input name="Post Code" value={postcode} setValue={setPostcode} />
                 <Input className=" col-span-2 sm:col-span-1" name="Country" value={country} setValue={setCountry} />
               </div>
+              {/* ----------------------------------------- */}
+              <p className="text-md mt-10 text-purple font-bold">Bill To</p>
+              <Input name="Client's Name" value={clientName} setValue={setClientName} />
+              <Input name="Client's Email" value={clientEmail} setValue={setClientEmail} />
+              <Input name="Street Address" value={clientStreetAddress} setValue={setClientStreetAddress} />
+              <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
+                <Input className="" name="City" value={clientCity} setValue={setClientCity} />
+                <Input className="" name="Post Code" value={clientPostcode} setValue={setClientPostcode} />
+                <Input className=" col-span-2 sm:col-span-1" name="Country" value={clientCountry} setValue={setClientPostcode} />
+              </div>
+              {/* ----------------------------------------- */}
+              <DatePicker dateVal={createAt} setDateVal={setCreateAt} label="Invoice Date" />
+              <Input name="Project Description" value={projectDescription} setValue={setProjectDescription} />
+              <h2 className="mt-20 text-2xl font-bold text-gray-600 dark:text-gray-400">Item List</h2>
+              {ItemList}
+              <Button mode={btnModes.NewItem} onClick={() => addInvoiceItem()}></Button>
             </div>
-            {/* ----------------------------------------- */}
-            <p className="text-md mt-10 text-purple font-bold mx-2">Bill To</p>
-            <Input name="Client's Name" value={clientName} setValue={setClientName} />
-            <Input name="Client's Email" value={clientEmail} setValue={setClientEmail} />
-            <Input name="Street Address" value={clientStreetAddress} setValue={setClientStreetAddress} />
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
-              <Input className="" name="City" value={clientCity} setValue={setClientCity} />
-              <Input className="" name="Post Code" value={clientPostcode} setValue={setClientPostcode} />
-              <Input className=" col-span-2 sm:col-span-1" name="Country" value={clientCountry} setValue={setClientPostcode} />
-            </div>
-            {/* ----------------------------------------- */}
-            {ItemList}
-            <Button mode={btnModes.NewItem} onClick={() => addInvoiceItem()}></Button>
           </div>
         </div>
         <div className="bg-white dark:bg-app-dark-4 shadow-2xl fixed bottom-0 w-full max-w-3xl h-24 md:rounded-br-3xl flex justify-between px-8">
           <div>
-            <Button mode={btnModes.Discard} onClick={() => {}}></Button>
+            <Button
+              mode={btnModes.Discard}
+              onClick={() => {
+                discard();
+              }}
+            ></Button>
           </div>
           <div>
             <Button
@@ -196,7 +222,6 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
           "fixed z-10 inset-0 bg-gray-900 w-screen h-screen transition-opacity duration-300 " +
           (show ? " opacity-60 translate-x-0 left-0 " : " opacity-0 -left-full")
         }
-        onClick={() => setShow(!show)}
       ></div>
     </div>
   );

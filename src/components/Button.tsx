@@ -30,13 +30,12 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
   } else if (mode === Modes.Delete) {
     btnClass = "bg-red-500 m-1 text-white rounded-3xl px-5 py-3 hover:bg-red-400 transition-color duration-100";
   } else if (mode === Modes.Discard) {
-    btnClass = "bg-indigo-100 m-1 text-gray-600 rounded-3xl px-5 py-3 hover:bg-indigo-200 transition-color duration-100";
-  }
-  else if (mode === Modes.SaveAsDraft) {
+    btnClass = "bg-gray-100 m-1 text-gray-600 rounded-3xl px-5 py-3 hover:bg-gray-300 transition-color duration-100";
+  } else if (mode === Modes.SaveAsDraft) {
     btnClass = "bg-app-dark-3 m-1 text-gray-400 rounded-3xl px-5 py-3 hover:bg-app-dark-2 transition-color duration-100";
-  }
-  else if (mode === Modes.NewItem) {
-    btnClass = "bg-app-dark-3 m-1 text-gray-400 rounded-3xl px-5 py-3 hover:bg-app-dark-2 transition-color duration-100";
+  } else if (mode === Modes.NewItem) {
+    btnClass =
+      "w-full flex justify-center items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 mt-5 text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 rounded-3xl px-5 py-3 transition-color duration-100";
   }
 
   return (
@@ -53,7 +52,12 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
       {mode === Modes.Delete && <React.Fragment>Delete</React.Fragment>}
       {mode === Modes.Discard && <React.Fragment>Discard</React.Fragment>}
       {mode === Modes.SaveAsDraft && <React.Fragment>Save as Draft</React.Fragment>}
-      {mode === Modes.NewItem && <React.Fragment>NewItem</React.Fragment>}
+      {mode === Modes.NewItem && (
+        <React.Fragment>
+          <img src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="plus-icon" className="mr-3"/>
+          Add New Item
+        </React.Fragment>
+      )}
     </button>
   );
 };
