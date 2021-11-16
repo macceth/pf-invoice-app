@@ -26,6 +26,9 @@ module.exports = {
     extend: {
       translate: ['dark'],
       display: ['dark'],
+      backgroundColor: ['checked'],
+      borderColor: ['checked'],
+      fontWeight: ['hover'],
     }
   },
   plugins: [

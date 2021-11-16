@@ -72,7 +72,6 @@ export const saveEdit = (id: string, data: invoiceType) => {
         if (item.id === id) return data;
         return item;
       });
-      console.log(newInvoicesData);
       localStorage.setItem("data", JSON.stringify(newInvoicesData));
     } catch (error) {
       console.log(error);
@@ -85,7 +84,6 @@ export const addNewInvoice = (data: invoiceType) => {
     try {
       const currentInvoicesData = getState().invoice.invoices;
       const newInvoicesData = [...currentInvoicesData, data];
-      console.log(newInvoicesData);
       localStorage.setItem("data", JSON.stringify(newInvoicesData));
     } catch (error) {
       console.log(error);
