@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchInvoiceItemData } from "../store/invoice-action";
 import type { invoiceItemType } from "../models";
 import DatePicker from "./DatePicker";
+import moment from "moment";
+import Select from "./Select";
 
 export enum modes {
   CREATE,
@@ -32,7 +34,8 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
   const [clientCountry, setClientCountry] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [invoiceItems, setInvoiceItems] = useState<invoiceItemType[]>([]);
-  const [createAt, setCreateAt] = useState("");
+  const [createAt, setCreateAt] = useState(moment().format("YYYY-MM-DD"));
+  const [paymentTerm, setPaymentTerm] = useState(0);
 
   const { invoiceId } = useParams<{ invoiceId: string }>();
 
@@ -59,6 +62,7 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
       setInvoiceItems(invoiceStoreItem.items);
       setProjectDescription(invoiceStoreItem.description);
       setCreateAt(invoiceStoreItem.createdAt);
+      setPaymentTerm(invoiceStoreItem.paymentTerms)
     }
   }, [invoiceStoreItem]);
 
@@ -159,6 +163,12 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
     </div>
   ));
 
+  const PAYMENT_TERMS = [
+    { text: "7 days", value: 7 },
+    { text: "15 days", value: 15 },
+    { text: "30 days", value: 30 },
+  ];
+
   return (
     <div>
       <form
@@ -190,9 +200,12 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
                 <Input className=" col-span-2 sm:col-span-1" name="Country" value={clientCountry} setValue={setClientPostcode} />
               </div>
               {/* ----------------------------------------- */}
-              <DatePicker dateVal={createAt} setDateVal={setCreateAt} label="Invoice Date" />
+              <div className="grid grid-cols-2 gap-5 mt-6">
+                <DatePicker className=" col-span-1" dateVal={createAt} setDateVal={setCreateAt} label="Invoice Date" />
+                <Select label="Payment Terms" items={PAYMENT_TERMS} itemName="text" itemValue="value" value={paymentTerm} setValue={setPaymentTerm} />
+              </div>
               <Input name="Project Description" value={projectDescription} setValue={setProjectDescription} />
-              <h2 className="mt-20 text-2xl font-bold text-gray-600 dark:text-gray-400">Item List</h2>
+              <h2 className="mt-10 text-2xl font-bold text-gray-600 dark:text-gray-400">Item List</h2>
               {ItemList}
               <Button mode={btnModes.NewItem} onClick={() => addInvoiceItem()}></Button>
             </div>

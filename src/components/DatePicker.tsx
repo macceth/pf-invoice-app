@@ -8,9 +8,10 @@ interface DatePickerProps {
   dateVal: string;
   setDateVal: (newDateVal: string) => void;
   label: string;
+  className?: string;
 }
 
-const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
+const DatePicker = ({ dateVal, setDateVal, label, className = "" }: DatePickerProps) => {
   const [showDatepicker, setShowDatePicker] = useState(false);
   const [month, setMonth] = useState(10);
   const [year, setYear] = useState(2021);
@@ -19,7 +20,6 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   useClickOutsideCallback(ref, () => {
     setShowDatePicker(false);
@@ -38,14 +38,14 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
     } else setMonth(month + 1);
   };
 
-  const isSelectedDay = (calendarDate: number) => {
-    const lookingDate = moment().date(calendarDate).month(month).year(year).format("YYYY-MM-DD");
-    return dateVal === lookingDate;
+  const isSelectedDay = (date: number) => {
+    const lookingDate = moment().year(year).month(month).date(date);
+    return dateVal === lookingDate.format("YYYY-MM-DD");
   };
 
   const selectDate = (date: number) => {
-    const selectedDate = moment().date(date).month(month).year(year).format("YYYY-MM-DD");
-    setDateVal(selectedDate);
+    const selectedDate = moment().year(year).month(month).date(date);
+    setDateVal(selectedDate.format("YYYY-MM-DD"));
     setShowDatePicker(false);
   };
 
@@ -74,7 +74,7 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
   }, [month, year]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={"relative " + className}>
       <label className="block font-normal text-gray-500 dark:text-gray-400 text-sm mt-3 mb-2">{label}</label>
       <input
         readOnly
@@ -86,7 +86,7 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
         onClick={() => setShowDatePicker(true)}
       />
       {showDatepicker && (
-        <div className="bg-white mt-12 rounded-lg shadow p-4 absolute top-6 left-0 z-10 w-64">
+        <div className="bg-white dark:bg-app-dark-3 mt-12 rounded-lg shadow p-4 absolute top-6 left-0 z-10 w-64">
           <div className="flex justify-between items-center mb-2">
             <button
               type="button"
@@ -96,7 +96,7 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
               <img src={process.env.PUBLIC_URL + "/assets/icon-arrow-left.svg"} alt="icon-arrow-left" className="p-2" />
             </button>
             <div>
-              <span className="text-lg font-bold text-gray-800">
+              <span className="text-lg font-bold text-gray-800 dark:text-white">
                 {MONTH_NAMES[month]} {year}
               </span>
             </div>
@@ -118,8 +118,8 @@ const DatePicker = ({ dateVal, setDateVal, label }: DatePickerProps) => {
               <div style={{ width: "14.26%" }} key={date} className="px-1 mb-1">
                 <div
                   className={
-                    "cursor-pointer text-center text-md font-bold text-gray-800 rounded-full leading-loose transition ease-in-out duration-100" +
-                    (isSelectedDay(date) ? " text-purple-light" : "")
+                    "cursor-pointer text-center text-md font-bold text-gray-800 dark:text-white rounded-full leading-loose transition ease-in-out duration-100" +
+                    (isSelectedDay(date) ? " text-purple-light dark:text-purple-light" : "")
                   }
                   onClick={() => {
                     selectDate(date);
