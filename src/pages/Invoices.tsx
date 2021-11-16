@@ -76,6 +76,7 @@ const Invoices = () => {
                         type="checkbox"
                         className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
                         checked={filter.includes("draft")}
+                        onChange={() => clickFilter("draft")}
                       />{" "}
                       Draft
                     </div>
@@ -87,6 +88,7 @@ const Invoices = () => {
                         type="checkbox"
                         className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
                         checked={filter.includes("pending")}
+                        onChange={() => clickFilter("pending")}
                       />{" "}
                       Pending
                     </div>
@@ -98,6 +100,7 @@ const Invoices = () => {
                         type="checkbox"
                         className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
                         checked={filter.includes("paid")}
+                        onChange={() => clickFilter("paid")}
                       />{" "}
                       Paid
                     </div>
