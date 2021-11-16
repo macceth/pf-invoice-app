@@ -79,3 +79,16 @@ export const saveEdit = (id: string, data: invoiceType) => {
     }
   };
 };
+
+export const addNewInvoice = (data: invoiceType) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentInvoicesData = getState().invoice.invoices;
+      const newInvoicesData = [...currentInvoicesData, data];
+      console.log(newInvoicesData);
+      localStorage.setItem("data", JSON.stringify(newInvoicesData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};

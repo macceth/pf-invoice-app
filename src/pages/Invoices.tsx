@@ -8,13 +8,11 @@ import Page from "../components/Page";
 
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
+  const [darftId, setDraftId] = useState("");
+  const [showCreateDraftInvoice, setShowInvoiceDraftForm] = useState(false);
   const invoices = useAppSelector((state) => state.invoice.invoices);
 
   const dispatch = useAppDispatch();
-
-  const showInvoiceForm = (state: boolean) => {
-    setShowInvoiceForm(state);
-  };
 
   useEffect(() => {
     dispatch(fetchInvoicesData());
@@ -22,11 +20,21 @@ const Invoices = () => {
 
   const reload = async () => {
     dispatch(fetchInvoicesData());
-  }
+  };
+
+  const openEditDraft = (id: string) => {
+    setDraftId(id);
+    setShowInvoiceDraftForm(true);
+  };
+
+  const openNewInvoicePanel = () => {
+    setShowInvoiceForm(true);
+  };
 
   return (
     <React.Fragment>
-      <InvoiceForm mode={modes.CREATE} show={showCreateInvoice} setShow={showInvoiceForm} reload={reload}/>
+      <InvoiceForm mode={modes.CREATE_DRAFT} darftId={darftId} show={showCreateDraftInvoice} setShow={setShowInvoiceDraftForm} reload={reload} />
+      <InvoiceForm mode={modes.CREATE} show={showCreateInvoice} setShow={setShowInvoiceForm} reload={reload} />
       <Page>
         <div className="container max-w-5xl pt-10 mx-auto">
           <div className="flex justify-between mb-14">
@@ -38,12 +46,13 @@ const Invoices = () => {
               <button className="mr-5 text-gray-600 dark:text-white">
                 Filter by status <img className="inline-block" src={process.env.PUBLIC_URL + "/assets/icon-arrow-down.svg"} alt="icon-arrow-down" />
               </button>
-              <Button onClick={() => showInvoiceForm(true)} mode={buttonModes.NewInvoice} />
+              <Button onClick={() => openNewInvoicePanel()} mode={buttonModes.NewInvoice} />
             </div>
           </div>
 
           {invoices.map((item) => (
             <InvoiceItem
+              openEditDraft={openEditDraft}
               id={item.id}
               clientName={item.clientName}
               paymentDue={item.paymentDue}

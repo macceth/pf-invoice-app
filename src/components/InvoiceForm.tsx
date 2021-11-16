@@ -3,11 +3,13 @@ import Input from "./Input";
 import Button, { Modes as btnModes } from "./Button";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchInvoiceItemData, saveEdit } from "../store/invoice-action";
-import type { invoiceItemType } from "../models";
+import { fetchInvoiceItemData, saveEdit as saveEditToServer, addNewInvoice, deleteInvoiceItem } from "../store/invoice-action";
+import type { invoiceItemType, invoiceType } from "../models";
+import { defaultInvoice } from "../models";
 import DatePicker from "./DatePicker";
 import moment from "moment";
 import Select from "./Select";
+import { generateRandomString } from "../helper";
 
 export enum modes {
   CREATE,
@@ -20,9 +22,10 @@ interface InvoiceFormProps {
   show: boolean;
   mode: modes;
   reload: () => void;
+  darftId?: string;
 }
 
-const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
+const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps) => {
   const [streetAdress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
   const [postCode, setPostCode] = useState("");
@@ -38,10 +41,11 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
   const [createAt, setCreateAt] = useState(moment().format("YYYY-MM-DD"));
   const [paymentTerm, setPaymentTerm] = useState(0);
 
-  const { invoiceId } = useParams<{ invoiceId: string }>();
+  let { invoiceId } = useParams<{ invoiceId: string }>();
+  if (mode === modes.CREATE_DRAFT && darftId) invoiceId = darftId;
 
   const invoiceStoreItem = useAppSelector((state) => state.invoice.invoiceItem);
-
+  const invoiceDataItem = invoiceId ? invoiceStoreItem : null;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -49,29 +53,29 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
   }, [dispatch, invoiceId]);
 
   const loadDataForEdit = useCallback(() => {
-    if (invoiceStoreItem) {
-      setStreetAddress(invoiceStoreItem.senderAddress.street);
-      setCity(invoiceStoreItem.senderAddress.city);
-      setPostCode(invoiceStoreItem.senderAddress.postCode);
-      setCountry(invoiceStoreItem.senderAddress.country);
-      setClientName(invoiceStoreItem.clientName);
-      setClientEmail(invoiceStoreItem.clientEmail);
-      setClientStreetAddress(invoiceStoreItem.clientAddress.street);
-      setClientCity(invoiceStoreItem.clientAddress.city);
-      setClientPostCode(invoiceStoreItem.clientAddress.postCode);
-      setClientCountry(invoiceStoreItem.clientAddress.country);
-      setInvoiceItems(invoiceStoreItem.items);
-      setProjectDescription(invoiceStoreItem.description);
-      setCreateAt(invoiceStoreItem.createdAt);
-      setPaymentTerm(invoiceStoreItem.paymentTerms);
+    if (invoiceDataItem) {
+      setStreetAddress(invoiceDataItem.senderAddress.street);
+      setCity(invoiceDataItem.senderAddress.city);
+      setPostCode(invoiceDataItem.senderAddress.postCode);
+      setCountry(invoiceDataItem.senderAddress.country);
+      setClientName(invoiceDataItem.clientName);
+      setClientEmail(invoiceDataItem.clientEmail);
+      setClientStreetAddress(invoiceDataItem.clientAddress.street);
+      setClientCity(invoiceDataItem.clientAddress.city);
+      setClientPostCode(invoiceDataItem.clientAddress.postCode);
+      setClientCountry(invoiceDataItem.clientAddress.country);
+      setInvoiceItems(invoiceDataItem.items);
+      setProjectDescription(invoiceDataItem.description);
+      setCreateAt(invoiceDataItem.createdAt);
+      setPaymentTerm(invoiceDataItem.paymentTerms);
     }
-  }, [invoiceStoreItem]);
+  }, [invoiceDataItem]);
 
   useEffect(() => {
-    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceStoreItem) {
+    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceDataItem) {
       loadDataForEdit();
     }
-  }, [invoiceStoreItem, loadDataForEdit, mode]);
+  }, [invoiceDataItem, loadDataForEdit, mode]);
 
   let title = "";
   if (mode === modes.CREATE || mode === modes.CREATE_DRAFT) {
@@ -80,45 +84,63 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
     title = "Edit #" + invoiceId;
   }
 
-  const saveDraft = () => {
-    console.log(streetAdress);
+  const saveData = async (saveMode: string) => {
+    let NewInvoiceDataItem: invoiceType = defaultInvoice;
+    if (invoiceDataItem && invoiceDataItem.clientAddress && invoiceDataItem.senderAddress) {
+      NewInvoiceDataItem = {
+        ...invoiceDataItem,
+        clientAddress: { ...invoiceDataItem.clientAddress },
+        senderAddress: { ...invoiceDataItem.senderAddress },
+      };
+    }
+
+    NewInvoiceDataItem.senderAddress.street = streetAdress;
+    NewInvoiceDataItem.senderAddress.city = city;
+    NewInvoiceDataItem.senderAddress.postCode = postCode;
+    NewInvoiceDataItem.senderAddress.country = country;
+
+    NewInvoiceDataItem.clientName = clientName;
+    NewInvoiceDataItem.clientEmail = clientEmail;
+    NewInvoiceDataItem.clientAddress.street = clientStreetAddress;
+    NewInvoiceDataItem.clientAddress.city = clientCity;
+    NewInvoiceDataItem.clientAddress.postCode = clientPostCode;
+    NewInvoiceDataItem.clientAddress.country = clientCountry;
+
+    NewInvoiceDataItem.description = projectDescription;
+    NewInvoiceDataItem.createdAt = createAt;
+    NewInvoiceDataItem.paymentTerms = paymentTerm;
+    NewInvoiceDataItem.items = invoiceItems;
+
+    NewInvoiceDataItem.total = invoiceItems.reduce((sum, item) => item.total + sum, 0);
+
+    const newPaymentDue = moment(createAt, "YYYY-MM-DD").add(paymentTerm, "days").format("YYYY-MM-DD");
+    NewInvoiceDataItem.paymentDue = newPaymentDue;
+
+    if (saveMode === "saveEdit") {
+      await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
+    } else if (saveMode === "saveDraft") {
+      if (invoiceId) {
+        await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
+      } else {
+        NewInvoiceDataItem.id = generateRandomString(6).toUpperCase();
+        NewInvoiceDataItem.status = "draft";
+        await dispatch(addNewInvoice(NewInvoiceDataItem));
+      }
+    }
+    reload();
+    setShow(false);
   };
 
-  const saveChange = async () => {
-    console.log("save change");
-    if (invoiceStoreItem && invoiceStoreItem.clientAddress && invoiceStoreItem.senderAddress) {
-      let NewInvoiceStoreItem = {
-        ...invoiceStoreItem,
-        clientAddress: { ...invoiceStoreItem.clientAddress },
-        senderAddress: { ...invoiceStoreItem.senderAddress },
-      };
-      NewInvoiceStoreItem.senderAddress.street = streetAdress;
-      NewInvoiceStoreItem.senderAddress.city = city;
-      NewInvoiceStoreItem.senderAddress.postCode = postCode;
-      NewInvoiceStoreItem.senderAddress.country = country;
+  const saveEdit = async () => {
+    await saveData("saveEdit");
+  };
 
-      NewInvoiceStoreItem.clientName = clientName;
-      NewInvoiceStoreItem.clientEmail = clientEmail;
-      NewInvoiceStoreItem.clientAddress.street = clientStreetAddress;
-      NewInvoiceStoreItem.clientAddress.city = clientCity;
-      NewInvoiceStoreItem.clientAddress.postCode = clientPostCode;
-      NewInvoiceStoreItem.clientAddress.country = clientCountry;
+  const saveAndSend = async () => {
+    await saveData("saveAndSend");
+  };
 
-      NewInvoiceStoreItem.description = projectDescription;
-      NewInvoiceStoreItem.createdAt = createAt;
-      NewInvoiceStoreItem.paymentTerms = paymentTerm;
-      NewInvoiceStoreItem.items = invoiceItems;
-
-      NewInvoiceStoreItem.total = invoiceItems.reduce((sum, item) => item.total + sum, 0);
-
-      const newPaymentDue = moment(createAt, "YYYY-MM-DD").add(paymentTerm, "days").format("YYYY-MM-DD");
-      NewInvoiceStoreItem.paymentDue = newPaymentDue;
-
-      console.log(NewInvoiceStoreItem);
-      await dispatch(saveEdit(invoiceId, NewInvoiceStoreItem));
-      reload();
-      setShow(false);
-    }
+  const saveDraft = async () => {
+    await saveData("saveDraft");
   };
 
   const removeInvoiceItem = (index: number) => {
@@ -131,10 +153,13 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
   };
 
   const discard = () => {
-    setShow(false);
-    if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceStoreItem) {
+    if (mode === modes.EDIT && invoiceDataItem) {
       loadDataForEdit();
+    } else if (mode === modes.CREATE_DRAFT && darftId && invoiceDataItem) {
+      dispatch(deleteInvoiceItem(darftId));
+      reload();
     }
+    setShow(false);
   };
 
   const saveInvoiceItem = ({
@@ -270,6 +295,15 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
               ></Button>
             )}
 
+            {(mode === modes.CREATE || mode === modes.CREATE_DRAFT) && (
+              <Button
+                mode={btnModes.SaveAndSend}
+                onClick={() => {
+                  saveAndSend();
+                }}
+              ></Button>
+            )}
+
             {mode === modes.EDIT && (
               <Button
                 mode={btnModes.Cancel}
@@ -283,7 +317,7 @@ const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
               <Button
                 mode={btnModes.SaveChange}
                 onClick={() => {
-                  saveChange();
+                  saveEdit();
                 }}
               ></Button>
             )}

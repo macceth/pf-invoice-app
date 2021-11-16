@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import moment from "moment";
 import InvoiceStatus from "./InvoiceStatus";
+import React from "react";
 
 interface InvoiceItemProps {
   id: string;
@@ -8,14 +9,15 @@ interface InvoiceItemProps {
   paymentDue: string;
   total: number;
   status: string;
+  openEditDraft: (id: string) => void;
 }
 
 const InvoiceItem = (props: InvoiceItemProps) => {
   const dueDateString = moment(props.paymentDue).format("DD MMM YYYY");
-  const path = "/invoices/" + (props.status === 'draft' ? 'create/' : '') + props.id
+  const path = "/invoices/" + (props.status === "draft" ? "create/" : "") + props.id;
 
-  return (
-    <Link to={path}>
+  const itemUI = (
+    <React.Fragment>
       <div className="hidden md:flex bg-white hover:bg-gray-50 dark:bg-app-dark-3 dark:hover:bg-app-dark-4 rounded-md w-auto mb-5 p-7 shadow justify-between items-center">
         <div className="flex-1">
           <span className="text-purple font-bold mr-0.5 text-lg">#</span>
@@ -47,8 +49,16 @@ const InvoiceItem = (props: InvoiceItemProps) => {
           <InvoiceStatus status={props.status} className="mx-2 mt-4" />
         </div>
       </div>
-    </Link>
+    </React.Fragment>
   );
+
+  if (props.status !== "draft") return <Link to={path}>{itemUI}</Link>;
+  else
+    return (
+      <div className="cursor-pointer" onClick={() => props.openEditDraft(props.id)}>
+        {itemUI}
+      </div>
+    );
 };
 
 export default InvoiceItem;

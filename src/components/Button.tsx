@@ -54,9 +54,10 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
       {mode === Modes.Discard && <React.Fragment>Discard</React.Fragment>}
       {mode === Modes.SaveAsDraft && <React.Fragment>Save as Draft</React.Fragment>}
       {mode === Modes.SaveChange && <React.Fragment>Save Change</React.Fragment>}
+      {mode === Modes.SaveAndSend && <React.Fragment>{"Save & Send"}</React.Fragment>}
       {mode === Modes.NewItem && (
         <React.Fragment>
-          <img src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="plus-icon" className="mr-3"/>
+          <img src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="plus-icon" className="mr-3" />
           Add New Item
         </React.Fragment>
       )}
