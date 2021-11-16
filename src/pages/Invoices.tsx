@@ -20,9 +20,13 @@ const Invoices = () => {
     dispatch(fetchInvoicesData());
   }, [dispatch]);
 
+  const reload = async () => {
+    dispatch(fetchInvoicesData());
+  }
+
   return (
     <React.Fragment>
-      <InvoiceForm mode={modes.CREATE} show={showCreateInvoice} setShow={showInvoiceForm} />
+      <InvoiceForm mode={modes.CREATE} show={showCreateInvoice} setShow={showInvoiceForm} reload={reload}/>
       <Page>
         <div className="container max-w-5xl pt-10 mx-auto">
           <div className="flex justify-between mb-14">

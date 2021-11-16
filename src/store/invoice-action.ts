@@ -63,3 +63,19 @@ export const markAsPaid = (id: string) => {
     }
   };
 };
+
+export const saveEdit = (id: string, data: invoiceType) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentInvoicesData = getState().invoice.invoices;
+      const newInvoicesData = currentInvoicesData.map((item) => {
+        if (item.id === id) return data;
+        return item;
+      });
+      console.log(newInvoicesData);
+      localStorage.setItem("data", JSON.stringify(newInvoicesData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};

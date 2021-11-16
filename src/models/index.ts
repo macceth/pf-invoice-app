@@ -27,5 +27,5 @@ export interface invoiceType {
     postCode: string;
     country: string;
   };
-  items: [invoiceItemType];
+  items: invoiceItemType[];
 }

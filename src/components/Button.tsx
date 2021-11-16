@@ -15,6 +15,7 @@ export enum Modes {
   SaveAsDraft,
   Discard,
   SaveAndSend,
+  SaveChange,
   NewItem,
 }
 
@@ -22,7 +23,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
   let btnClass = className ? className : "";
   if (mode === Modes.NewInvoice) {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-2 py-2 hover:bg-purple-light transition-color duration-100";
-  } else if (mode === Modes.MarkAsPaid || mode === Modes.SaveAndSend) {
+  } else if (mode === Modes.MarkAsPaid || mode === Modes.SaveAndSend || mode === Modes.SaveChange) {
     btnClass = "bg-purple m-1 text-white rounded-3xl px-5 py-3 hover:bg-purple-light transition-color duration-100";
   } else if (mode === Modes.Edit || mode === Modes.Cancel) {
     btnClass =
@@ -52,6 +53,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
       {mode === Modes.Delete && <React.Fragment>Delete</React.Fragment>}
       {mode === Modes.Discard && <React.Fragment>Discard</React.Fragment>}
       {mode === Modes.SaveAsDraft && <React.Fragment>Save as Draft</React.Fragment>}
+      {mode === Modes.SaveChange && <React.Fragment>Save Change</React.Fragment>}
       {mode === Modes.NewItem && (
         <React.Fragment>
           <img src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="plus-icon" className="mr-3"/>

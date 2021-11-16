@@ -1,7 +1,7 @@
 import type { invoiceItemType } from "../models";
 
 interface ItemListProp {
-  itemList: [invoiceItemType];
+  itemList: invoiceItemType[];
   total: number;
 }
 

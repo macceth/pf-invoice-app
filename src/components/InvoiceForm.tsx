@@ -3,7 +3,7 @@ import Input from "./Input";
 import Button, { Modes as btnModes } from "./Button";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchInvoiceItemData } from "../store/invoice-action";
+import { fetchInvoiceItemData, saveEdit } from "../store/invoice-action";
 import type { invoiceItemType } from "../models";
 import DatePicker from "./DatePicker";
 import moment from "moment";
@@ -19,18 +19,19 @@ interface InvoiceFormProps {
   setShow: (state: boolean) => void;
   show: boolean;
   mode: modes;
+  reload: () => void;
 }
 
-const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
+const InvoiceForm = ({ setShow, show, mode, reload }: InvoiceFormProps) => {
   const [streetAdress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
-  const [postcode, setPostcode] = useState("");
+  const [postCode, setPostCode] = useState("");
   const [country, setCountry] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientStreetAddress, setClientStreetAddress] = useState("");
   const [clientCity, setClientCity] = useState("");
-  const [clientPostcode, setClientPostcode] = useState("");
+  const [clientPostCode, setClientPostCode] = useState("");
   const [clientCountry, setClientCountry] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [invoiceItems, setInvoiceItems] = useState<invoiceItemType[]>([]);
@@ -51,18 +52,18 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
     if (invoiceStoreItem) {
       setStreetAddress(invoiceStoreItem.senderAddress.street);
       setCity(invoiceStoreItem.senderAddress.city);
-      setPostcode(invoiceStoreItem.senderAddress.postCode);
+      setPostCode(invoiceStoreItem.senderAddress.postCode);
       setCountry(invoiceStoreItem.senderAddress.country);
       setClientName(invoiceStoreItem.clientName);
       setClientEmail(invoiceStoreItem.clientEmail);
       setClientStreetAddress(invoiceStoreItem.clientAddress.street);
       setClientCity(invoiceStoreItem.clientAddress.city);
-      setClientPostcode(invoiceStoreItem.clientAddress.postCode);
+      setClientPostCode(invoiceStoreItem.clientAddress.postCode);
       setClientCountry(invoiceStoreItem.clientAddress.country);
       setInvoiceItems(invoiceStoreItem.items);
       setProjectDescription(invoiceStoreItem.description);
       setCreateAt(invoiceStoreItem.createdAt);
-      setPaymentTerm(invoiceStoreItem.paymentTerms)
+      setPaymentTerm(invoiceStoreItem.paymentTerms);
     }
   }, [invoiceStoreItem]);
 
@@ -81,6 +82,43 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
 
   const saveDraft = () => {
     console.log(streetAdress);
+  };
+
+  const saveChange = async () => {
+    console.log("save change");
+    if (invoiceStoreItem && invoiceStoreItem.clientAddress && invoiceStoreItem.senderAddress) {
+      let NewInvoiceStoreItem = {
+        ...invoiceStoreItem,
+        clientAddress: { ...invoiceStoreItem.clientAddress },
+        senderAddress: { ...invoiceStoreItem.senderAddress },
+      };
+      NewInvoiceStoreItem.senderAddress.street = streetAdress;
+      NewInvoiceStoreItem.senderAddress.city = city;
+      NewInvoiceStoreItem.senderAddress.postCode = postCode;
+      NewInvoiceStoreItem.senderAddress.country = country;
+
+      NewInvoiceStoreItem.clientName = clientName;
+      NewInvoiceStoreItem.clientEmail = clientEmail;
+      NewInvoiceStoreItem.clientAddress.street = clientStreetAddress;
+      NewInvoiceStoreItem.clientAddress.city = clientCity;
+      NewInvoiceStoreItem.clientAddress.postCode = clientPostCode;
+      NewInvoiceStoreItem.clientAddress.country = clientCountry;
+
+      NewInvoiceStoreItem.description = projectDescription;
+      NewInvoiceStoreItem.createdAt = createAt;
+      NewInvoiceStoreItem.paymentTerms = paymentTerm;
+      NewInvoiceStoreItem.items = invoiceItems;
+
+      NewInvoiceStoreItem.total = invoiceItems.reduce((sum, item) => item.total + sum, 0);
+
+      const newPaymentDue = moment(createAt, "YYYY-MM-DD").add(paymentTerm, "days").format("YYYY-MM-DD");
+      NewInvoiceStoreItem.paymentDue = newPaymentDue;
+
+      console.log(NewInvoiceStoreItem);
+      await dispatch(saveEdit(invoiceId, NewInvoiceStoreItem));
+      reload();
+      setShow(false);
+    }
   };
 
   const removeInvoiceItem = (index: number) => {
@@ -186,7 +224,7 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
               <Input name="Street Address" value={streetAdress} setValue={setStreetAddress} />
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                 <Input name="City" value={city} setValue={setCity} />
-                <Input name="Post Code" value={postcode} setValue={setPostcode} />
+                <Input name="Post Code" value={postCode} setValue={setPostCode} />
                 <Input className=" col-span-2 sm:col-span-1" name="Country" value={country} setValue={setCountry} />
               </div>
               {/* ----------------------------------------- */}
@@ -196,8 +234,8 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
               <Input name="Street Address" value={clientStreetAddress} setValue={setClientStreetAddress} />
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                 <Input className="" name="City" value={clientCity} setValue={setClientCity} />
-                <Input className="" name="Post Code" value={clientPostcode} setValue={setClientPostcode} />
-                <Input className=" col-span-2 sm:col-span-1" name="Country" value={clientCountry} setValue={setClientPostcode} />
+                <Input className="" name="Post Code" value={clientPostCode} setValue={setClientPostCode} />
+                <Input className=" col-span-2 sm:col-span-1" name="Country" value={clientCountry} setValue={setClientPostCode} />
               </div>
               {/* ----------------------------------------- */}
               <div className="grid grid-cols-2 gap-5 mt-6">
@@ -211,26 +249,51 @@ const InvoiceForm = ({ setShow, show, mode }: InvoiceFormProps) => {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-app-dark-4 shadow-2xl fixed bottom-0 w-full max-w-3xl h-24 md:rounded-br-3xl flex justify-between px-8">
+        <div className="bg-white dark:bg-app-dark-4 shadow-2xl fixed bottom-0 w-full max-w-3xl h-24 md:rounded-br-3xl flex justify-between px-8 pt-5">
           <div>
-            <Button
-              mode={btnModes.Discard}
-              onClick={() => {
-                discard();
-              }}
-            ></Button>
+            {(mode === modes.CREATE || mode === modes.CREATE_DRAFT) && (
+              <Button
+                mode={btnModes.Discard}
+                onClick={() => {
+                  discard();
+                }}
+              ></Button>
+            )}
           </div>
           <div>
-            <Button
-              mode={btnModes.SaveAsDraft}
-              onClick={() => {
-                saveDraft();
-              }}
-            ></Button>
+            {(mode === modes.CREATE || mode === modes.CREATE_DRAFT) && (
+              <Button
+                mode={btnModes.SaveAsDraft}
+                onClick={() => {
+                  saveDraft();
+                }}
+              ></Button>
+            )}
+
+            {mode === modes.EDIT && (
+              <Button
+                mode={btnModes.Cancel}
+                onClick={() => {
+                  discard();
+                }}
+              ></Button>
+            )}
+
+            {mode === modes.EDIT && (
+              <Button
+                mode={btnModes.SaveChange}
+                onClick={() => {
+                  saveChange();
+                }}
+              ></Button>
+            )}
           </div>
         </div>
       </form>
       <div
+        onClick={() => {
+          setShow(false);
+        }}
         className={
           "fixed z-10 inset-0 bg-gray-900 w-screen h-screen transition-opacity duration-300 " +
           (show ? " opacity-60 translate-x-0 left-0 " : " opacity-0 -left-full")

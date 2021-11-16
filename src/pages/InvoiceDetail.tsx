@@ -35,6 +35,10 @@ const InvoiceDetail = () => {
     }
   };
 
+  const reload = () => {
+    dispatch(fetchInvoiceItemData(invoiceId));
+  }
+
   const confirmDeleteInvoiceItem = () => {
     dispatch(deleteInvoiceItem(invoiceId));
     history.replace("/invoices");
@@ -124,7 +128,7 @@ const InvoiceDetail = () => {
               <ItemList itemList={invoiceItem.items} total={invoiceItem.total} />
             </div>
 
-            <InvoiceForm show={showInvoiceForm} setShow={setShowInvoiceForm} mode={modes.EDIT} />
+            <InvoiceForm show={showInvoiceForm} setShow={setShowInvoiceForm} mode={modes.EDIT} reload={reload}/>
 
             <BottomButtonGroup>{editButtonGroup}</BottomButtonGroup>
 
