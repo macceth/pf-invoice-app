@@ -118,6 +118,8 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
 
     if (saveMode === "saveEdit") {
       await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
+      reload();
+      setShow(false);
     } else if (saveMode === "saveDraft") {
       if (invoiceId) {
         await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
@@ -126,9 +128,17 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
         NewInvoiceDataItem.status = "draft";
         await dispatch(addNewInvoice(NewInvoiceDataItem));
       }
+      reload();
+      setShow(false);
     }
-    reload();
-    setShow(false);
+    if (saveMode === "saveAndSend") {
+      console.log("save and send");
+      if (false) {
+        NewInvoiceDataItem.status = "pending";
+        reload();
+        setShow(false);
+      }
+    }
   };
 
   const saveEdit = async () => {
