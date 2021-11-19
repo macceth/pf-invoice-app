@@ -40,7 +40,7 @@ const Button = ({ mode, className, onClick }: ButtonProps) => {
   }
 
   return (
-    <button className={btnClass} onClick={onClick}>
+    <button className={btnClass} onClick={onClick} type="button">
       {mode === Modes.NewInvoice && (
         <React.Fragment>
           <img className="bg-white rounded-full p-3 inline-block mr-3" src={process.env.PUBLIC_URL + "/assets/icon-plus.svg"} alt="icon plus" />
