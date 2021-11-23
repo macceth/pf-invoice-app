@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useClickOutsideCallback } from "../hooks";
+import { Field } from "formik";
 
 interface SelectProps {
   className?: string;
@@ -9,8 +10,9 @@ interface SelectProps {
   items: any[];
   value: any;
   setValue: (value: any) => void;
+  name: string;
 }
-const Select = ({ className = "", label, itemName, itemValue, items, value, setValue }: SelectProps) => {
+const Select = ({ className = "", label, itemName, itemValue, items, value, setValue, name }: SelectProps) => {
   const [openDropDown, setOpenDropDown] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,8 +34,9 @@ const Select = ({ className = "", label, itemName, itemValue, items, value, setV
   return (
     <div ref={ref} className={className + " relative"}>
       <label className="block font-normal text-gray-500 dark:text-gray-400 text-sm mt-3 mb-2">{label}</label>
-      <input
+      <Field
         readOnly
+        name={name}
         className="mt-1 block w-full bg-white dark:bg-app-dark-5 rounded-md 
         border-gray-300 dark:border-gray-800  font-bold
         focus:border-purple focus:ring-1 focus:ring-purple text-gray-500 dark:text-gray-400"

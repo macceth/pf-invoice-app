@@ -2,16 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useClickOutsideCallback } from "../hooks";
+import { Field } from "formik";
 import moment from "moment";
 
 interface DatePickerProps {
-  dateVal: string;
-  setDateVal: (newDateVal: string) => void;
   label: string;
   className?: string;
+  name: string;
+  value: string;
+  setValue: (value: string) => void;
 }
 
-const DatePicker = ({ dateVal, setDateVal, label, className = "" }: DatePickerProps) => {
+const DatePicker = ({ label, className = "", name, value, setValue }: DatePickerProps) => {
   const [showDatepicker, setShowDatePicker] = useState(false);
   const [month, setMonth] = useState(10);
   const [year, setYear] = useState(2021);
@@ -40,20 +42,20 @@ const DatePicker = ({ dateVal, setDateVal, label, className = "" }: DatePickerPr
 
   const isSelectedDay = (date: number) => {
     const lookingDate = moment().year(year).month(month).date(date);
-    return dateVal === lookingDate.format("YYYY-MM-DD");
+    return value === lookingDate.format("YYYY-MM-DD");
   };
 
   const selectDate = (date: number) => {
     const selectedDate = moment().year(year).month(month).date(date);
-    setDateVal(selectedDate.format("YYYY-MM-DD"));
+    setValue(selectedDate.format("YYYY-MM-DD"));
     setShowDatePicker(false);
   };
 
   useEffect(() => {
-    const dateObj = moment(dateVal, "YYYY-MM-DD");
+    const dateObj = moment(value, "YYYY-MM-DD");
     setMonth(dateObj.month());
     setYear(dateObj.year());
-  }, [dateVal]);
+  }, [value]);
 
   useEffect(() => {
     let daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -76,13 +78,13 @@ const DatePicker = ({ dateVal, setDateVal, label, className = "" }: DatePickerPr
   return (
     <div ref={ref} className={"relative " + className}>
       <label className="block font-normal text-gray-500 dark:text-gray-400 text-sm mt-3 mb-2">{label}</label>
-      <input
+      <Field
         readOnly
+        name={name}
         className="mt-1 block w-full bg-white dark:bg-app-dark-5 rounded-md 
         border-gray-300 dark:border-gray-800  font-bold
         focus:border-purple focus:ring-1 focus:ring-purple text-gray-500 dark:text-gray-400"
         type="text"
-        value={dateVal}
         onClick={() => setShowDatePicker(true)}
       />
       {showDatepicker && (
