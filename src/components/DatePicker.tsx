@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useClickOutsideCallback } from "../hooks";
-import { Field } from "formik";
+import { Field, ErrorMessage } from "formik";
 import moment from "moment";
 
 interface DatePickerProps {
@@ -87,6 +87,7 @@ const DatePicker = ({ label, className = "", name, value, setValue }: DatePicker
         type="text"
         onClick={() => setShowDatePicker(true)}
       />
+      <ErrorMessage name={name}>{(msg) => <div className=" text-red-500 text-sm mt-3">{msg}</div>}</ErrorMessage>
       {showDatepicker && (
         <div className="bg-white dark:bg-app-dark-3 mt-12 rounded-lg shadow p-4 absolute top-6 left-0 z-10 w-64">
           <div className="flex justify-between items-center mb-2">

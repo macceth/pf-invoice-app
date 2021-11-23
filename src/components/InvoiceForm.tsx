@@ -7,12 +7,12 @@ import { fetchInvoiceItemData, saveEdit as saveEditToServer, addNewInvoice, dele
 import type { invoiceItemType, invoiceType } from "../models";
 import { defaultInvoice } from "../models";
 import DatePicker from "./DatePicker";
-import moment from "moment";
 import Select from "./Select";
 import { generateRandomString } from "../helper";
-import { Formik, Form, FormikHelpers, FormikProps, FieldArray } from "formik";
+import { Formik, Form, FormikHelpers, FormikProps, FieldArray, setNestedObjectValues } from "formik";
 import * as Yup from "yup";
 import { log } from "console";
+import moment from "moment";
 
 export enum modes {
   CREATE,
@@ -53,42 +53,13 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
   }
 
   const saveData = async (saveMode: string, data: invoiceType) => {
-    let NewInvoiceDataItem: invoiceType = defaultInvoice;
-    if (invoiceDataItem && invoiceDataItem.clientAddress && invoiceDataItem.senderAddress) {
-      NewInvoiceDataItem = {
-        ...invoiceDataItem,
-        clientAddress: { ...invoiceDataItem.clientAddress },
-        senderAddress: { ...invoiceDataItem.senderAddress },
-      };
-    }
+    let NewInvoiceDataItem: invoiceType = data;
+    NewInvoiceDataItem.total = NewInvoiceDataItem.items.reduce((acc, item) => acc + item.total, 0);
+    NewInvoiceDataItem.paymentDue = moment(NewInvoiceDataItem.createdAt).add(NewInvoiceDataItem.paymentTerms, "days").format("YYYY-MM-DD");
 
-    // NewInvoiceDataItem.senderAddress.street = streetAdress;
-    // NewInvoiceDataItem.senderAddress.city = city;
-    // NewInvoiceDataItem.senderAddress.postCode = postCode;
-    // NewInvoiceDataItem.senderAddress.country = country;
+    console.log(NewInvoiceDataItem);
 
-    // NewInvoiceDataItem.clientName = clientName;
-    // NewInvoiceDataItem.clientEmail = clientEmail;
-    // NewInvoiceDataItem.clientAddress.street = clientStreetAddress;
-    // NewInvoiceDataItem.clientAddress.city = clientCity;
-    // NewInvoiceDataItem.clientAddress.postCode = clientPostCode;
-    // NewInvoiceDataItem.clientAddress.country = clientCountry;
-
-    // NewInvoiceDataItem.description = projectDescription;
-    // NewInvoiceDataItem.createdAt = createAt;
-    // NewInvoiceDataItem.paymentTerms = paymentTerm;
-    // NewInvoiceDataItem.items = invoiceItems;
-
-    // NewInvoiceDataItem.total = invoiceItems.reduce((sum, item) => item.total + sum, 0);
-
-    // const newPaymentDue = moment(createAt, "YYYY-MM-DD").add(paymentTerm, "days").format("YYYY-MM-DD");
-    // NewInvoiceDataItem.paymentDue = newPaymentDue;
-
-    if (saveMode === "saveEdit") {
-      await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
-      reload();
-      setShow(false);
-    } else if (saveMode === "saveDraft") {
+    if (saveMode === "saveDraft") {
       if (invoiceId) {
         await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
       } else {
@@ -98,14 +69,15 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
       }
       reload();
       setShow(false);
-    }
-    if (saveMode === "saveAndSend") {
+    } else if (saveMode === "saveAndSend") {
       console.log("save and send");
-      if (false) {
-        NewInvoiceDataItem.status = "pending";
-        reload();
-        setShow(false);
-      }
+      NewInvoiceDataItem.status = "pending";
+      reload();
+      setShow(false);
+    } else if (saveMode === "saveEdit") {
+      await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
+      reload();
+      setShow(false);
     }
   };
 
@@ -118,13 +90,24 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
 
   const saveAndSend = async () => {
     if (formikRef.current) {
-      formikRef.current.submitForm();
+      const result = await formikRef.current.validateForm();
+      await formikRef.current.setTouched(setNestedObjectValues(result, true));
+      console.log(result);
+      
+      // if (result) {
+      //   await saveData("saveAndSend", formikRef.current.values);
+      // }
+      // else {
+      //   alert("Please fill all required fields");
+      // }
     }
     // await saveData("saveAndSend");
   };
 
   const saveDraft = async () => {
-    // await saveData("saveDraft");
+    if (formikRef.current) {
+      await saveData("saveDraft", formikRef.current.values);
+    }
   };
 
   const discard = () => {
@@ -168,7 +151,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
       country: invoiceDataItem ? invoiceDataItem.clientAddress.country : "",
     },
     items: invoiceDataItem ? invoiceDataItem.items : [],
-    createdAt: invoiceDataItem ? invoiceDataItem.createdAt : "",
+    createdAt: invoiceDataItem ? invoiceDataItem.createdAt : moment().format("YYYY-MM-DD"),
     paymentTerms: invoiceDataItem ? invoiceDataItem.paymentTerms : 0,
     paymentDue: invoiceDataItem ? invoiceDataItem.paymentDue : "",
     total: invoiceDataItem ? invoiceDataItem.total : 0,
@@ -182,7 +165,34 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
         innerRef={formikRef}
         initialValues={defaultValue}
         onSubmit={submitHandler}
-        render={({ values, setFieldValue }) => (
+        validationSchema={Yup.object({
+          clientName: Yup.string().required("Client name is required"),
+          clientEmail: Yup.string().email("Invalid email address").required("Client email is required"),
+          description: Yup.string().required("Description is required"),
+          senderAddress: Yup.object({
+            street: Yup.string().required("Street is required"),
+            city: Yup.string().required("City is required"),
+            postCode: Yup.string().required("Post code is required"),
+            country: Yup.string().required("Country is required"),
+          }),
+          clientAddress: Yup.object({
+            street: Yup.string().required("Street is required"),
+            city: Yup.string().required("City is required"),
+            postCode: Yup.string().required("Post code is required"),
+            country: Yup.string().required("Country is required"),
+          }),
+          items: Yup.array().of(
+            Yup.object({
+              name: Yup.string().required("Item name is required"),
+              quantity: Yup.number().required("Item quantity is required").positive("must not be 0"),
+              price: Yup.number().required("Item price is required").positive("must not be 0"),
+            })
+          ),
+          createdAt: Yup.string().required("Invoice date is required"),
+          paymentTerms: Yup.number().required("Payment terms is required").positive("Payment terms is required"),
+          paymentDue: Yup.string().required("Payment due is required"),
+        })}
+        render={({ values, setFieldValue, handleChange }) => (
           <Form
             className={
               "fixed flex flex-col justify-between z-20 w-screen max-w-3xl top-0 h-screen transition-all translate duration-300 " +
@@ -194,7 +204,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
                 <div className="mx-2">
                   <h1 className="font-bold text-3xl text-gray-900 dark:text-white">{title}</h1>
                   {/* ----------------------------------------- */}
-                  <p className="text-md mt-10 text-purple font-bold mx-2">Bill From {defaultValue.id}</p>
+                  <p className="text-md mt-10 text-purple font-bold mx-2">Bill From</p>
                   <Input label="Street Address" name="senderAddress.street" />
                   <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                     <Input label="City" name="senderAddress.city" />
@@ -244,9 +254,29 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
                         {values.items.map((item, index) => (
                           <div className="grid grid-cols-10 gap-2" key={index}>
                             <Input className="col-span-4" label="Name" name={`items.${index}.name`} />
-                            <Input className="col-span-1" label="Qty." name={`items.${index}.quantity`} />
-                            <Input className="col-span-2" label="Price" name={`items.${index}.price`} type="number" />
-                            <Input className="col-span-2" label="Total" name={`items.${index}.total`} readonly value={item.price * item.quantity} />
+                            <Input
+                              className="col-span-1"
+                              label="Qty."
+                              name={`items.${index}.quantity`}
+                              type="number"
+                              onChange={(e) => {
+                                handleChange(e);
+                                const newVal = parseFloat(e.currentTarget.value);
+                                setFieldValue(`items.${index}.total`, newVal * values.items[index].price);
+                              }}
+                            />
+                            <Input
+                              className="col-span-2"
+                              label="Price"
+                              name={`items.${index}.price`}
+                              type="number"
+                              onChange={(e) => {
+                                handleChange(e);
+                                const newVal = parseFloat(e.currentTarget.value);
+                                setFieldValue(`items.${index}.total`, newVal * values.items[index].quantity);
+                              }}
+                            />
+                            <Input className="col-span-2" label="Total" name={`items.${index}.total`} readonly />
                             <button
                               type="button"
                               className="items-center mt-11 rounded-full hover:bg-red-500 w-8 h-8"

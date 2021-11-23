@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useClickOutsideCallback } from "../hooks";
-import { Field } from "formik";
+import { Field, ErrorMessage } from "formik";
 
 interface SelectProps {
   className?: string;
@@ -46,6 +46,7 @@ const Select = ({ className = "", label, itemName, itemValue, items, value, setV
         }}
         value={selectedItemIndex ? selectedItemIndex[itemName] : ""}
       />
+      <ErrorMessage name={name}>{(msg) => <div className=" text-red-500 text-sm mt-3">{msg}</div>}</ErrorMessage>
       {openDropDown && (
         <div
           className="bg-white min-w-full dark:bg-app-dark-3 absolute text-base z-50 py-2 list-none text-left rounded shadow-lg mt-1 "
