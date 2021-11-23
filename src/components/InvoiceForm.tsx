@@ -12,6 +12,7 @@ import Select from "./Select";
 import { generateRandomString } from "../helper";
 import { Formik, Form, FormikHelpers, FormikProps, FieldArray } from "formik";
 import * as Yup from "yup";
+import { log } from "console";
 
 export enum modes {
   CREATE,
@@ -34,6 +35,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
   if (mode === modes.CREATE_DRAFT && darftId) invoiceId = darftId;
 
   const invoiceStoreItem = useAppSelector((state) => state.invoice.invoiceItem);
+
   const invoiceDataItem = invoiceId ? invoiceStoreItem : null;
   const dispatch = useAppDispatch();
 
@@ -41,34 +43,11 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
     if (invoiceId) dispatch(fetchInvoiceItemData(invoiceId));
   }, [dispatch, invoiceId]);
 
-  // const loadDataForEdit = useCallback(() => {
-  //   if (invoiceDataItem) {
-  //     setStreetAddress(invoiceDataItem.senderAddress.street);
-  //     setCity(invoiceDataItem.senderAddress.city);
-  //     setPostCode(invoiceDataItem.senderAddress.postCode);
-  //     setCountry(invoiceDataItem.senderAddress.country);
-  //     setClientName(invoiceDataItem.clientName);
-  //     setClientEmail(invoiceDataItem.clientEmail);
-  //     setClientStreetAddress(invoiceDataItem.clientAddress.street);
-  //     setClientCity(invoiceDataItem.clientAddress.city);
-  //     setClientPostCode(invoiceDataItem.clientAddress.postCode);
-  //     setClientCountry(invoiceDataItem.clientAddress.country);
-  //     setInvoiceItems(invoiceDataItem.items);
-  //     setProjectDescription(invoiceDataItem.description);
-  //     setCreateAt(invoiceDataItem.createdAt);
-  //     setPaymentTerm(invoiceDataItem.paymentTerms);
-  //   }
-  // }, [invoiceDataItem]);
-
-  // useEffect(() => {
-  //   if ((mode === modes.CREATE_DRAFT || mode === modes.EDIT) && invoiceDataItem) {
-  //     loadDataForEdit();
-  //   }
-  // }, [invoiceDataItem, loadDataForEdit, mode]);
-
   let title = "";
-  if (mode === modes.CREATE || mode === modes.CREATE_DRAFT) {
+  if (mode === modes.CREATE) {
     title = "New Invoice";
+  } else if (mode === modes.CREATE_DRAFT) {
+    title = `New Invoice (Edit Draft: #${darftId})`;
   } else {
     title = "Edit #" + invoiceId;
   }
@@ -199,6 +178,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
   return (
     <div>
       <Formik
+        enableReinitialize
         innerRef={formikRef}
         initialValues={defaultValue}
         onSubmit={submitHandler}
@@ -214,7 +194,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
                 <div className="mx-2">
                   <h1 className="font-bold text-3xl text-gray-900 dark:text-white">{title}</h1>
                   {/* ----------------------------------------- */}
-                  <p className="text-md mt-10 text-purple font-bold mx-2">Bill From</p>
+                  <p className="text-md mt-10 text-purple font-bold mx-2">Bill From {defaultValue.id}</p>
                   <Input label="Street Address" name="senderAddress.street" />
                   <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                     <Input label="City" name="senderAddress.city" />
