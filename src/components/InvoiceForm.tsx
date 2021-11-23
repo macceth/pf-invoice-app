@@ -107,7 +107,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
 
   const saveDraft = async () => {
     if (formikRef.current) {
-      await formikRef.current.setErrors({});
+      await formikRef.current.setTouched({});
       await saveData("saveDraft", formikRef.current.values);
     }
   };
