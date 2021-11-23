@@ -57,8 +57,6 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
     NewInvoiceDataItem.total = NewInvoiceDataItem.items.reduce((acc, item) => acc + item.total, 0);
     NewInvoiceDataItem.paymentDue = moment(NewInvoiceDataItem.createdAt).add(NewInvoiceDataItem.paymentTerms, "days").format("YYYY-MM-DD");
 
-    console.log(NewInvoiceDataItem);
-
     if (saveMode === "saveDraft") {
       if (invoiceId) {
         await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
@@ -70,8 +68,14 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
       reload();
       setShow(false);
     } else if (saveMode === "saveAndSend") {
-      console.log("save and send");
-      NewInvoiceDataItem.status = "pending";
+      if (invoiceId) {
+        NewInvoiceDataItem.status = "pending";
+        await dispatch(saveEditToServer(invoiceId, NewInvoiceDataItem));
+      } else {
+        NewInvoiceDataItem.id = generateRandomString(6).toUpperCase();
+        NewInvoiceDataItem.status = "pending";
+        await dispatch(addNewInvoice(NewInvoiceDataItem));
+      }
       reload();
       setShow(false);
     } else if (saveMode === "saveEdit") {
@@ -83,29 +87,27 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
 
   const saveEdit = async () => {
     if (formikRef.current) {
-      formikRef.current.submitForm();
+      const result = await formikRef.current.validateForm();
+      await formikRef.current.setTouched(setNestedObjectValues(result, true));
+      if (formikRef.current.isValid) {
+        await saveData("saveEdit", formikRef.current.values);
+      }
     }
-    // await saveData("saveEdit");
   };
 
   const saveAndSend = async () => {
     if (formikRef.current) {
       const result = await formikRef.current.validateForm();
       await formikRef.current.setTouched(setNestedObjectValues(result, true));
-      console.log(result);
-
-      // if (result) {
-      //   await saveData("saveAndSend", formikRef.current.values);
-      // }
-      // else {
-      //   alert("Please fill all required fields");
-      // }
+      if (formikRef.current.isValid) {
+        await saveData("saveAndSend", formikRef.current.values);
+      }
     }
-    // await saveData("saveAndSend");
   };
 
   const saveDraft = async () => {
     if (formikRef.current) {
+      await formikRef.current.setErrors({});
       await saveData("saveDraft", formikRef.current.values);
     }
   };
@@ -190,7 +192,6 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
           ),
           createdAt: Yup.string().required("Invoice date is required"),
           paymentTerms: Yup.number().required("Payment terms is required").positive("Payment terms is required"),
-          paymentDue: Yup.string().required("Payment due is required"),
         })}
         render={({ values, setFieldValue, handleChange }) => (
           <Form

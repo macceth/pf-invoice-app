@@ -204,7 +204,7 @@
     "description": "Logo Re-design",
     "paymentTerms": 7,
     "clientName": "Anita Wainwright",
-    "clientEmail": "",
+    "clientEmail": "anita@test.com",
     "status": "draft",
     "senderAddress": {
       "street": "19 Union Terrace",
