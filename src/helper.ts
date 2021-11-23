@@ -3,3 +3,9 @@
 export const generateRandomString = (length: number) => {
   return Math.random().toString(20).substr(2, length);
 };
+
+
+export const capitalize = (s: string) => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}

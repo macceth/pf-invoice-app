@@ -9,6 +9,7 @@ function App() {
     localStorage.setItem("theme", "light");
   }
   const localTheme = localStorage.getItem("theme");
+  
   const [theme, setTheme] = useState(localTheme);
 
   const toggleDarkModeHandler = () => {

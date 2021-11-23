@@ -5,6 +5,7 @@ import InvoiceItem from "../components/InvoiceItem";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchInvoicesData } from "../store/invoice-action";
 import Page from "../components/Page";
+import { capitalize } from "../helper";
 
 const Invoices = () => {
   const [showCreateInvoice, setShowInvoiceForm] = useState(false);
@@ -42,6 +43,25 @@ const Invoices = () => {
     else setFilter([...filter, item]);
   };
 
+  const filterRender = (filterName: string) => (
+    <div onClick={() => clickFilter(filterName)} className="my-2 mx-4 rounded-sm text-gray-800 dark:text-gray-200 hover:font-bold cursor-pointer">
+      <input
+        type="checkbox"
+        className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
+        checked={filter.includes(filterName)}
+      />
+      {" " + capitalize(filterName)}
+    </div>
+  );
+
+  const filters = (
+    <div className="absolute w-full bg-white dark:bg-app-dark-5 rounded-sm z-10">
+      {filterRender("draft")}
+      {filterRender("pending")}
+      {filterRender("paid")}
+    </div>
+  );
+
   return (
     <React.Fragment>
       <InvoiceForm mode={modes.CREATE_DRAFT} darftId={darftId} show={showCreateDraftInvoice} setShow={setShowInvoiceDraftForm} reload={reload} />
@@ -66,46 +86,7 @@ const Invoices = () => {
                 <button className="mr-5 text-gray-600 dark:text-white" onClick={() => setshowFilter(!showFilter)}>
                   Filter by status <img className="inline-block" src={process.env.PUBLIC_URL + "/assets/icon-arrow-down.svg"} alt="icon-arrow-down" />
                 </button>
-                {showFilter && (
-                  <div className="absolute w-full bg-white dark:bg-app-dark-5 rounded-sm z-10">
-                    <div
-                      onClick={() => clickFilter("draft")}
-                      className="my-2 mx-4 rounded-sm text-gray-800 dark:text-gray-200 hover:font-bold cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
-                        checked={filter.includes("draft")}
-                        onChange={() => clickFilter("draft")}
-                      />{" "}
-                      Draft
-                    </div>
-                    <div
-                      onClick={() => clickFilter("pending")}
-                      className="my-2 mx-4 rounded-sm text-gray-800 dark:text-gray-200 hover:font-bold cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
-                        checked={filter.includes("pending")}
-                        onChange={() => clickFilter("pending")}
-                      />{" "}
-                      Pending
-                    </div>
-                    <div
-                      onClick={() => clickFilter("paid")}
-                      className="my-2 mx-4 rounded-sm text-gray-800 dark:text-gray-200 hover:font-bold cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        className="appearance-none rounded-sm bg-transparent checked:bg-purple mr-2 checked:border-transparent"
-                        checked={filter.includes("paid")}
-                        onChange={() => clickFilter("paid")}
-                      />{" "}
-                      Paid
-                    </div>
-                  </div>
-                )}
+                {showFilter && filters}
               </div>
               <Button onClick={() => openNewInvoicePanel()} mode={buttonModes.NewInvoice} />
             </div>
