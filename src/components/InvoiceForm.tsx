@@ -93,7 +93,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
       const result = await formikRef.current.validateForm();
       await formikRef.current.setTouched(setNestedObjectValues(result, true));
       console.log(result);
-      
+
       // if (result) {
       //   await saveData("saveAndSend", formikRef.current.values);
       // }
@@ -111,7 +111,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
   };
 
   const discard = () => {
-    if (mode === modes.EDIT && invoiceDataItem) {
+    if ((mode === modes.EDIT && invoiceDataItem) || mode === modes.CREATE) {
       // reset form
       if (formikRef.current) {
         formikRef.current.resetForm();
