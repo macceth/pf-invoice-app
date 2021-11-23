@@ -123,7 +123,19 @@ const Invoices = () => {
             />
           ))}
           {filteredInvoices.length === 0 && (
-            <div className="text-center text-gray-600 dark:text-gray-200">sssss</div>
+            <div className="w-full h-full flex justify-center items-center">
+              <div className="w-full max-w-lg flex flex-col justify-center items-center">
+                <img
+                  src={process.env.PUBLIC_URL + "/assets/illustration-empty.svg"}
+                  className="w-full max-w-sm md:max-w-md lg:max-w-lg"
+                  alt="no invoice"
+                />
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">There is nothing here</h2>
+                <h3 className="mt-10 text-gray-800 dark:text-white">
+                  Create an invoice by clicking the <b>New</b> button and get started
+                </h3>
+              </div>
+            </div>
           )}
         </div>
       </Page>

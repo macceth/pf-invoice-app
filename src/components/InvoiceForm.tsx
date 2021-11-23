@@ -1,17 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Input from "./Input";
 import Button, { Modes as btnModes } from "./Button";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchInvoiceItemData, saveEdit as saveEditToServer, addNewInvoice, deleteInvoiceItem } from "../store/invoice-action";
-import type { invoiceItemType, invoiceType } from "../models";
-import { defaultInvoice } from "../models";
+import type { invoiceType } from "../models";
 import DatePicker from "./DatePicker";
 import Select from "./Select";
 import { generateRandomString } from "../helper";
 import { Formik, Form, FormikHelpers, FormikProps, FieldArray, setNestedObjectValues } from "formik";
 import * as Yup from "yup";
-import { log } from "console";
 import moment from "moment";
 
 export enum modes {
