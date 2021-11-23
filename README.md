@@ -6,12 +6,10 @@ This is a solution to the [Invoice app challenge on Frontend Mentor](https://www
 
 - [Overview](#overview)
   - [The challenge](#the-challenge)
-  - [Screenshot](#screenshot)
   - [Links](#links)
 - [My process](#my-process)
   - [Built with](#built-with)
   - [What I learned](#what-i-learned)
-  - [Continued development](#continued-development)
 - [Author](#author)
 
 ## Overview
@@ -28,9 +26,6 @@ Users should be able to:
 - Filter invoices by status (draft/pending/paid)
 - Toggle light and dark mode
 - Save data to local Storage
-
-### Screenshot
-
 
 
 ### Links
@@ -49,11 +44,7 @@ Users should be able to:
 
 ### What I learned
 
-While my experience mostly used Vue.js as a JS framework, I want to extend my skill so I learn React and Typescript and built this app as a practice. Tailwind is also new for me. So this project is like a new frontier of my experience.
-
-### Continued development
-
-Use this section to outline areas that you want to continue focusing on in future projects. These could be concepts you're still not completely comfortable with or techniques you found useful that you want to refine and perfect.
+While my experience primarily used Vue.js as a JS framework, I want to extend my range of skills to learn React and Typescript and build this app as a practice. Tailwind is also new for me. So this project is like a new frontier of my experience.
 
 ## Author
 
