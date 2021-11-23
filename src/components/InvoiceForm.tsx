@@ -201,7 +201,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
             }
           >
             <div className="bg-white dark:bg-app-dark-4 h-full p-8 md:rounded-r-3xl">
-              <div className="h-full pb-24 overflow-y-scroll">
+              <div className="h-full pb-32 overflow-y-scroll">
                 <div className="mx-2">
                   <h1 className="font-bold text-3xl text-gray-900 dark:text-white">{title}</h1>
                   {/* ----------------------------------------- */}
@@ -296,7 +296,7 @@ const InvoiceForm = ({ setShow, show, mode, reload, darftId }: InvoiceFormProps)
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-app-dark-4 shadow-2xl fixed bottom-0 w-full max-w-3xl h-24 md:rounded-br-3xl flex justify-between px-8 pt-5">
+            <div className="bg-white dark:bg-app-dark-4 shadow-t-xl fixed bottom-0 w-full max-w-3xl h-24 md:rounded-br-3xl flex justify-between px-8 pt-5">
               <div>
                 {(mode === modes.CREATE || mode === modes.CREATE_DRAFT) && (
                   <Button

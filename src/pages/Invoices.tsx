@@ -122,6 +122,9 @@ const Invoices = () => {
               status={item.status}
             />
           ))}
+          {filteredInvoices.length === 0 && (
+            <div className="text-center text-gray-600 dark:text-gray-200">sssss</div>
+          )}
         </div>
       </Page>
     </React.Fragment>

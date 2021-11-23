@@ -82,7 +82,7 @@ const InvoiceDetail = () => {
               <div className="hidden sm:block">{editButtonGroup}</div>
             </div>
 
-            <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mt-6 flex-col justify-between">
+            <div className="bg-white dark:bg-app-dark-3 rounded-md shadow-md p-5 mt-6 flex-col justify-between mb-10">
               <div className="grid grid-cols-2 justify-between items-center flex-1">
                 <div className="mt-3 col-span-2 sm:col-span-1">
                   <div className="text-2xl dark:text-white">
